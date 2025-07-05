@@ -1,0 +1,23 @@
+# NAME: Emby
+# AUTHOR: L-strawberry
+# HOMEPAGE: https://github.com/L-strawberry/ACL4SSR/tree/main/Clash/Emby.list
+# UPDATED: 2025-07-05 08:00:00
+# DOMAIN: 10
+# DOMAIN-KEYWORD: 1
+# DOMAIN-SUFFIX: 0
+# IP-ASN: 0
+# IP-CIDR: 1
+# TOTAL: 12
+
+DOMAIN-KEYWORD,emby
+DOMAIN,tanhuatv.site
+DOMAIN,alist7.eu.org
+DOMAIN,misty.cx
+DOMAIN,kessoku-bando.biliblili.uk
+DOMAIN,play.charontv.com
+DOMAIN,random.ouonet.org
+DOMAIN,eidix.store
+DOMAIN,mini.jmsuper.com
+DOMAIN,streamer.pilipiliultra.com
+DOMAIN,pilipili.club
+IP-CIDR,188.172.228.65/24,no-resolve
