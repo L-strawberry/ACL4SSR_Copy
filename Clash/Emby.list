@@ -20,4 +20,4 @@ DOMAIN,eidix.store
 DOMAIN,mini.jmsuper.com
 DOMAIN,streamer.pilipiliultra.com
 DOMAIN,pilipili.club
-IP-CIDR,188.172.228.65/24,no-resolve
+IP-CIDR,188.172.228.65/32,no-resolve
