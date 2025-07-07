@@ -1,0 +1,223 @@
+{
+  "version": "1.0",
+  "exportTime": 1751875595103,
+  "rules": [
+    {
+      "id": "368b0fd5-0aaa-4702-99f8-ff3ce3454eee",
+      "name": "Advertising",
+      "regex": "ADVERTISING",
+      "iconType": "URL",
+      "iconData": "https://gh.568641.xyz/https://raw.githubusercontent.com/L-strawberry/ACL4SSR_Copy/refs/heads/main/ICON_Color/Advertising.png"
+    },
+    {
+      "id": "67f56808-daad-4b7c-890e-319dd712712e",
+      "name": "Apple",
+      "regex": "APPLE",
+      "iconType": "URL",
+      "iconData": "https://gh.568641.xyz/https://raw.githubusercontent.com/L-strawberry/ACL4SSR_Copy/refs/heads/main/ICON_Color/Apple.png"
+    },
+    {
+      "id": "40456a1d-7b0f-4e80-ac68-8505302bb58c",
+      "name": "Auto",
+      "regex": "AUTO",
+      "iconType": "URL",
+      "iconData": "https://gh.568641.xyz/https://raw.githubusercontent.com/L-strawberry/ACL4SSR_Copy/refs/heads/main/ICON_Color/Auto.png"
+    },
+    {
+      "id": "816dfe76-9b8c-496e-ba3b-66dce886afa4",
+      "name": "Bahamut",
+      "regex": "BAHAMUT",
+      "iconType": "URL",
+      "iconData": "https://gh.568641.xyz/https://raw.githubusercontent.com/L-strawberry/ACL4SSR_Copy/refs/heads/main/ICON_Color/Bahamut.png"
+    },
+    {
+      "id": "84756bd1-d770-421a-8f19-e17b0d5fa823",
+      "name": "ChatGPT",
+      "regex": "CHATGPT",
+      "iconType": "URL",
+      "iconData": "https://gh.568641.xyz/https://raw.githubusercontent.com/L-strawberry/ACL4SSR_Copy/refs/heads/main/ICON_Color/ChatGPT.png"
+    },
+    {
+      "id": "f8d453ad-c26c-4c70-8048-09cea19b95f6",
+      "name": "Direct",
+      "regex": "DIRECT",
+      "iconType": "URL",
+      "iconData": "https://gh.568641.xyz/https://raw.githubusercontent.com/L-strawberry/ACL4SSR_Copy/refs/heads/main/ICON_Color/Direct.png"
+    },
+    {
+      "id": "efc3e869-0b30-45dd-b9d5-6107745dfb2b",
+      "name": "DomesticMedia",
+      "regex": "DOMESTICMEDIA",
+      "iconType": "URL",
+      "iconData": "https://gh.568641.xyz/https://raw.githubusercontent.com/L-strawberry/ACL4SSR_Copy/refs/heads/main/ICON_Color/DomesticMedia.png"
+    },
+    {
+      "id": "2874e3fc-a09a-470a-a8fd-9fc887df5bb9",
+      "name": "Emby",
+      "regex": "EMBY",
+      "iconType": "URL",
+      "iconData": "https://gh.568641.xyz/https://raw.githubusercontent.com/L-strawberry/ACL4SSR_Copy/refs/heads/main/ICON_Color/Emby.png"
+    },
+    {
+      "id": "c75fc61b-07bd-41e7-ac56-39a912d869cf",
+      "name": "Final",
+      "regex": "FINAL",
+      "iconType": "URL",
+      "iconData": "https://gh.568641.xyz/https://raw.githubusercontent.com/L-strawberry/ACL4SSR_Copy/refs/heads/main/ICON_Color/Final.png"
+    },
+    {
+      "id": "1dfee494-1cac-44a6-aac5-ad0a7e214fa8",
+      "name": "ForeignMedia",
+      "regex": "FOREIGNMEDIA",
+      "iconType": "URL",
+      "iconData": "https://gh.568641.xyz/https://raw.githubusercontent.com/L-strawberry/ACL4SSR_Copy/refs/heads/main/ICON_Color/ForeignMedia.png"
+    },
+    {
+      "id": "95d70ec8-c53f-47fd-b5a5-ff7faa02ba18",
+      "name": "Game",
+      "regex": "GAME",
+      "iconType": "URL",
+      "iconData": "https://gh.568641.xyz/https://raw.githubusercontent.com/L-strawberry/ACL4SSR_Copy/refs/heads/main/ICON_Color/Game.png"
+    },
+    {
+      "id": "aa8912a6-3875-4446-900b-a01684dea61c",
+      "name": "GitHub",
+      "regex": "GITHUB",
+      "iconType": "URL",
+      "iconData": "https://gh.568641.xyz/https://raw.githubusercontent.com/L-strawberry/ACL4SSR_Copy/refs/heads/main/ICON_Color/GitHub.png"
+    },
+    {
+      "id": "c57d3d39-12d3-453f-afad-6394fa4a1271",
+      "name": "Global",
+      "regex": "GLOBAL",
+      "iconType": "URL",
+      "iconData": "https://gh.568641.xyz/https://raw.githubusercontent.com/L-strawberry/ACL4SSR_Copy/refs/heads/main/ICON_Color/Global.png"
+    },
+    {
+      "id": "81910cac-4eef-4178-85dd-e4acbb70ea0e",
+      "name": "Hong Kong",
+      "regex": "HONG_KONG",
+      "iconType": "URL",
+      "iconData": "https://gh.568641.xyz/https://raw.githubusercontent.com/L-strawberry/ACL4SSR_Copy/refs/heads/main/ICON_Color/Hong_Kong.png"
+    },
+    {
+      "id": "716342a3-7a7c-476b-ba54-4f366fc2aeab",
+      "name": "Japan",
+      "regex": "JAPAN",
+      "iconType": "URL",
+      "iconData": "https://gh.568641.xyz/https://raw.githubusercontent.com/L-strawberry/ACL4SSR_Copy/refs/heads/main/ICON_Color/Japan.png"
+    },
+    {
+      "id": "8c711b37-5a8b-4f20-98d9-d3a0d02e4242",
+      "name": "Korea",
+      "regex": "KOREA",
+      "iconType": "URL",
+      "iconData": "https://gh.568641.xyz/https://raw.githubusercontent.com/L-strawberry/ACL4SSR_Copy/refs/heads/main/ICON_Color/Korea.png"
+    },
+    {
+      "id": "0b479f4d-4339-4660-a176-6d074ca50802",
+      "name": "Microsoft",
+      "regex": "MICROSOFT",
+      "iconType": "URL",
+      "iconData": "https://gh.568641.xyz/https://raw.githubusercontent.com/L-strawberry/ACL4SSR_Copy/refs/heads/main/ICON_Color/Microsoft.png"
+    },
+    {
+      "id": "cf5a0af0-9180-4291-b470-b8618abd1be4",
+      "name": "NetEase CloudMusic",
+      "regex": "NETEASE_CLOUDMUSIC",
+      "iconType": "URL",
+      "iconData": "https://gh.568641.xyz/https://raw.githubusercontent.com/L-strawberry/ACL4SSR_Copy/refs/heads/main/ICON_Color/NetEase_CloudMusic.png"
+    },
+    {
+      "id": "f92d8729-d1dd-4c61-a779-04f50ba0ffc5",
+      "name": "Netflix",
+      "regex": "NETFLIX",
+      "iconType": "URL",
+      "iconData": "https://gh.568641.xyz/https://raw.githubusercontent.com/L-strawberry/ACL4SSR_Copy/refs/heads/main/ICON_Color/Netflix.png"
+    },
+    {
+      "id": "a7d0235c-3aca-49c1-85b4-d08549935fb6",
+      "name": "OneDrive",
+      "regex": "ONEDRIVE",
+      "iconType": "URL",
+      "iconData": "https://gh.568641.xyz/https://raw.githubusercontent.com/L-strawberry/ACL4SSR_Copy/refs/heads/main/ICON_Color/OneDrive.png"
+    },
+    {
+      "id": "6832b059-296f-4e23-bae5-e1c8a8395ce5",
+      "name": "Proxy",
+      "regex": "PROXY",
+      "iconType": "URL",
+      "iconData": "https://gh.568641.xyz/https://raw.githubusercontent.com/L-strawberry/ACL4SSR_Copy/refs/heads/main/ICON_Color/Proxy.png"
+    },
+    {
+      "id": "fbade2f5-ffa7-486f-85f0-d9945e5b40e7",
+      "name": "Reject",
+      "regex": "REJECT",
+      "iconType": "URL",
+      "iconData": "https://gh.568641.xyz/https://raw.githubusercontent.com/L-strawberry/ACL4SSR_Copy/refs/heads/main/ICON_Color/Reject.png"
+    },
+    {
+      "id": "5806d69b-d91f-453f-a7d0-d2300346c962",
+      "name": "Singapore",
+      "regex": "SINGAPORE",
+      "iconType": "URL",
+      "iconData": "https://gh.568641.xyz/https://raw.githubusercontent.com/L-strawberry/ACL4SSR_Copy/refs/heads/main/ICON_Color/Singapore.png"
+    },
+    {
+      "id": "03690218-642e-43e9-ae2b-872b0ea07696",
+      "name": "Taiwan",
+      "regex": "TAIWAN",
+      "iconType": "URL",
+      "iconData": "https://gh.568641.xyz/https://raw.githubusercontent.com/L-strawberry/ACL4SSR_Copy/refs/heads/main/ICON_Color/Taiwan.png"
+    },
+    {
+      "id": "d9def8e5-43f0-4373-8ea0-a5205bdecb00",
+      "name": "Telegram",
+      "regex": "TELEGRAM",
+      "iconType": "URL",
+      "iconData": "https://gh.568641.xyz/https://raw.githubusercontent.com/L-strawberry/ACL4SSR_Copy/refs/heads/main/ICON_Color/Telegram.png"
+    },
+    {
+      "id": "f933b504-f05b-47f1-bc4c-ede84d231988",
+      "name": "United States",
+      "regex": "UNITED_STATES",
+      "iconType": "URL",
+      "iconData": "https://gh.568641.xyz/https://raw.githubusercontent.com/L-strawberry/ACL4SSR_Copy/refs/heads/main/ICON_Color/United_States.png"
+    },
+    {
+      "id": "0b23f830-e194-487f-b33c-90ef641cf2c2",
+      "name": "YouTube",
+      "regex": "YOUTUBE",
+      "iconType": "URL",
+      "iconData": "https://gh.568641.xyz/https://raw.githubusercontent.com/L-strawberry/ACL4SSR_Copy/refs/heads/main/ICON_Color/YouTube.png"
+    },
+    {
+      "id": "25dc7c27-8506-401c-b0b0-8bb09becf838",
+      "name": "bilibili",
+      "regex": "BILIBILI",
+      "iconType": "URL",
+      "iconData": "https://gh.568641.xyz/https://raw.githubusercontent.com/L-strawberry/ACL4SSR_Copy/refs/heads/main/ICON_Color/bilibili.png"
+    },
+    {
+      "id": "60dda939-a16d-4198-8865-2d78eadd9a33",
+      "name": "bing",
+      "regex": "BING",
+      "iconType": "URL",
+      "iconData": "https://gh.568641.xyz/https://raw.githubusercontent.com/L-strawberry/ACL4SSR_Copy/refs/heads/main/ICON_Color/bing.png"
+    },
+    {
+      "id": "e6f27375-1aba-48e2-900f-4e06aa7eadf2",
+      "name": "fcm",
+      "regex": "FCM",
+      "iconType": "URL",
+      "iconData": "https://gh.568641.xyz/https://raw.githubusercontent.com/L-strawberry/ACL4SSR_Copy/refs/heads/main/ICON_Color/fcm.png"
+    },
+    {
+      "id": "f830e7e0-e789-4afb-99f6-4448cebae61c",
+      "name": "home",
+      "regex": "HOME",
+      "iconType": "URL",
+      "iconData": "https://gh.568641.xyz/https://raw.githubusercontent.com/L-strawberry/ACL4SSR_Copy/refs/heads/main/ICON_Color/home.png"
+    }
+  ]
+}
