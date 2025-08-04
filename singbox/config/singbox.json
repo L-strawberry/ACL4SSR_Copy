@@ -29,11 +29,11 @@
         {"tag": "ProxyMedia","type": "selector","outbounds": ["Proxy","🇭🇰 HongKong","🇺🇸 United States","🇸🇬 Singapore","🇯🇵 Japan","🇨🇳 Taiwan"],"default": "Proxy","interrupt_exist_connections": true},
         {"tag": "Final","type": "selector","outbounds": ["Proxy","🇭🇰 HongKong","🇺🇸 United States","🇸🇬 Singapore","🇯🇵 Japan","🇨🇳 Taiwan","direct"],"default": "Proxy","interrupt_exist_connections": true},
 
-        {"tag": "🇭🇰 HongKong","type": "urltest","outbounds": [],"url": "http://1.1.1.1/generate_204","interval": "10m","tolerance": 0,"interrupt_exist_connections": false},
-        {"tag": "🇺🇸 United States","type": "urltest","outbounds": [],"url": "http://1.1.1.1/generate_204","interval": "10m","tolerance": 0,"interrupt_exist_connections": false},
-        {"tag": "🇸🇬 Singapore","type": "urltest","outbounds": [],"url": "http://1.1.1.1/generate_204","interval": "10m","tolerance": 0,"interrupt_exist_connections": false},
-        {"tag": "🇯🇵 Japan","type": "urltest","outbounds": [],"url": "http://1.1.1.1/generate_204","interval": "10m","tolerance": 0,"interrupt_exist_connections": false},
-        {"tag": "🇨🇳 Taiwan","type": "urltest","outbounds": [],"url": "http://1.1.1.1/generate_204","interval": "10m","tolerance": 0,"interrupt_exist_connections": false}
+        {"tag": "🇭🇰 HongKong","type": "selector","outbounds": [],"default": "direct"},
+        {"tag": "🇺🇸 United States","type": "selector","outbounds": [],"default": "direct"},
+        {"tag": "🇸🇬 Singapore","type": "selector","outbounds": [],"default": "direct"},
+        {"tag": "🇯🇵 Japan","type": "selector","outbounds": [],"default": "direct"},
+        {"tag": "🇨🇳 Taiwan","type": "selector","outbounds": [],"default": "direct"}
     ],
     "route": {
         "default_domain_resolver": {"server": "ali"},
