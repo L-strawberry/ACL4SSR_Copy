@@ -1,0 +1,28 @@
+{
+  "version": 2,
+  "rules": [
+    {
+      "domain_keyword": [
+        "emby"
+      ],
+      "ip_cidr": [
+        "188.172.228.65/32"
+      ]
+    },
+    {
+      "domain": [
+        "tanhuatv.site",
+        "alist7.eu.org",
+        "misty.cx",
+        "kessoku-bando.biliblili.uk",
+        "play.charontv.com",
+        "random.ouonet.org",
+        "eidix.store",
+        "mini.jmsuper.com",
+        "streamer.pilipiliultra.com",
+        "pilipili.club",
+        "playz.mjji.de"
+      ]
+    }
+  ]
+}
