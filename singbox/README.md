@@ -1,21 +1,22 @@
-# sing-box 配置及 Sub-Store 脚本
+# 📑使用 Sub-Store 生成 sing-box配置
 
-此仓库包含适配 sing-box v1.12 版本的配置文件，并提供了搭配 Sub-Store 使用的脚本操作。
+利用Sub-Store文件页面生成适配 sing-box v1.12 版本的配置文件。
 
 ## 配置文件
+填入Sub-Store远程订阅链接。
 
-- **sing-box v1.12 配置**:
-
+- **sing-box v1.12 配置:**
+```
 https://raw.githubusercontent.com/L-strawberry/ACL4SSR_Copy/refs/heads/main/singbox/sing-box.json
-
+```
 ## Sub-Store 脚本操作
 
 搭配 Sub-Store 使用的脚本，用于出站代理规则的配置。
 
 - **Sub-Store 脚本**:
-
+```
 https://raw.githubusercontent.com/L-strawberry/ACL4SSR_Copy/refs/heads/main/singbox/tample.js#type=1&name=all&outbound=🕳Proxy|Emby|Final🕳ℹ️HongKong🏷ℹ️港|hk|hongkong|kong kong|🇭🇰🕳ℹ️Taiwan🏷ℹ️台|tw|taiwan|🇹🇼🕳ℹ️Japan🏷ℹ️日本|jp|japan|🇯🇵🕳ℹ️Telegram|Singapore🏷ℹ️^(?!.(?:us)).(新|sg|singapore|🇸🇬)🕳ℹ️United States🏷ℹ️美|us|unitedstates|united states|🇺🇸
-
+```
 ### 脚本说明
 
 此脚本定义了多个出站代理组，用于根据地理位置和特定服务进行流量分流。
@@ -52,7 +53,7 @@ https://raw.githubusercontent.com/L-strawberry/ACL4SSR_Copy/refs/heads/main/sing
 * **`url`**: 支持传入订阅 URL。请记住 `url` 需要进行 `encodeURIComponent` 编码。
   * 示例: `http://a.com?token=123` 应使用 `url=http%3A%2F%2Fa.com%3Ftoken%3D123`
 
-**重要提示**: 如果 `outbounds` 为空，脚本会自动创建 `COMPATIBLE(direct)` 以防止报错。
+**‼️重要提示**: 如果 `outbounds` 为空，脚本会自动创建 `COMPATIBLE(direct)` 以防止报错。
 
 
 ---
