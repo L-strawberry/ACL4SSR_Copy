@@ -22,7 +22,7 @@ https://raw.githubusercontent.com/L-strawberry/ACL4SSR_Copy/refs/heads/main/sing
 
 **出站规则示例**:
 
-* **🕳Proxy|Emby|Final🕳**: 默认代理、Emby 服务及最终回退规则。
+* **🕳Proxy|Emby|Final**: 默认代理、Emby 服务及最终回退规则。
 * **ℹ️HongKong🏷ℹ️港|hk|hongkong|kong kong|🇭🇰**: 香港节点。
 * **ℹ️Taiwan🏷ℹ️台|tw|taiwan|🇹🇼**: 台湾节点。
 * **ℹ️Japan🏷ℹ️日本|jp|japan|🇯🇵**: 日本节点。
