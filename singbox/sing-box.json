@@ -15,6 +15,7 @@
         "final": "cloudflare",
         "independent_cache": true
     },
+    
     "outbounds": [
         {"tag": "direct","type": "direct"},
         {"tag": "Proxy","type": "selector","outbounds": ["HongKong","United States","Singapore","Japan","Taiwan","direct"],"default": "HongKong","interrupt_exist_connections": true},
@@ -35,6 +36,7 @@
         {"tag": "Japan","type": "selector","outbounds": [],"interrupt_exist_connections": true},
         {"tag": "Taiwan","type": "selector","outbounds": [],"interrupt_exist_connections": true}
     ],
+    
     "route": {
         "default_domain_resolver": {"server": "ali"},
         "rule_set": [
@@ -60,8 +62,8 @@
             {"tag": "PrimeVideo", "type": "remote", "format": "binary", "url": "https://gh.568641.xyz/https://github.com/Repcz/Tool/raw/X/sing-box/Rules/PrimeVideo.srs", "download_detour": "direct"},
             {"tag": "HBO", "type": "remote", "format": "binary", "url": "https://gh.568641.xyz/https://github.com/Repcz/Tool/raw/X/sing-box/Rules/HBO.srs", "download_detour": "direct"},
             {"tag": "TikTok", "type": "remote", "format": "binary", "url": "https://gh.568641.xyz/https://github.com/Repcz/Tool/raw/X/sing-box/Rules/TikTok.srs", "download_detour": "direct"},
-            {"tag": "ChinaDomain", "type": "remote", "format": "binary", "url": "https://gh.568641.xyz/https://github.com/Repcz/Tool/raw/X/sing-box/Rules/ChinaDomain.srs", "download_detour": "direct"},
-            {"tag": "ChinaIP", "type": "remote", "format": "binary", "url": "https://gh.568641.xyz/https://github.com/Loyalsoldier/geoip/raw/release/srs/cn.srs", "download_detour": "direct"}
+            {"tag": "ChinaDomain", "type": "remote", "format": "binary", "url": "https://gh.568641.xyz/https://github.com/MetaCubeX/meta-rules-dat/blob/sing/geo/geosite/cn.srs", "download_detour": "direct"},
+            {"tag": "ChinaIP", "type": "remote", "format": "binary", "url": "https://gh.568641.xyz/https://github.com/MetaCubeX/meta-rules-dat/blob/sing/geo/geoip/cn.srs", "download_detour": "direct"}
         ],
         "rules": [
             {"action": "sniff","sniffer": ["http","tls","quic","dns"],"timeout": "500ms"},
@@ -85,12 +87,14 @@
         "auto_detect_interface": true,
         "final": "Final"
     },
+    
     "log": {
         "disabled": false,
         "level": "info",
         "output": "sing-box.log",
         "timestamp": true
     },
+    
     "experimental": {
         "cache_file": {
             "enabled": true,
@@ -106,6 +110,7 @@
       "access_control_allow_private_network": true
     }
     },
+    
     "inbounds": [
         {
             "type": "mixed",
