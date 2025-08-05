@@ -69,7 +69,6 @@
             {"action": "sniff","sniffer": ["http","tls","quic","dns"],"timeout": "500ms"},
             {"type": "logical","mode": "or","rules": [{"port": 53},{"protocol": "dns"}],"action": "hijack-dns"},
             {"ip_is_private": true,"action": "route","outbound": "direct"},
-            {"package_name": ["com.ss.android.ugc.aweme"],"action": "route","outbound": "direct"},
             {"clash_mode": "全局直连","action": "route","outbound": "direct"},
             {"clash_mode": "全局代理","action": "route","outbound": "Proxy"},
             {"rule_set": ["Ads"],"action": "reject"},
