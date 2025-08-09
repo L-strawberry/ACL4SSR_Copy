@@ -3,7 +3,7 @@
         "servers": [
             {"tag": "cloudflare","type": "https","server": "1.1.1.1","detour": "Proxy"},
             {"tag": "ali","type": "https","server": "223.6.6.6"},
-            {"tag": "fakeip","type": "fakeip","inet4_range": "198.18.0.0/15","inet6_range": "fc00::/18"}
+            {"tag": "fakeip","type": "fakeip","inet4_range": "198.18.0.0/15"}
         ],
         "rules": [
             {"clash_mode": "全局直连","action": "route","server": "ali"},
@@ -122,8 +122,7 @@
         {
             "type": "tun",
             "address": [
-                "172.18.0.1/30",
-                "fdfe:dcba:9876::1/126"
+                "172.18.0.1/30"
             ],
             "platform": {
                 "http_proxy": {
