@@ -1,14 +1,6 @@
 {
   "version": 2,
   "rules": [
-   /* {
-      "domain_keyword": [
-        "keyword"
-      ],
-      "ip_cidr": [
-        "ip/32"
-      ]
-    },*/
     {
       "domain": [
         "browserleaks.com",
