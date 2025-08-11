@@ -102,7 +102,7 @@
             "store_fakeip": true
         },
         "clash_api": {
-      "external_controller": "0.0.0.0:9090",
+      "external_controller": "127.0.0.1:20123",
       "external_ui": "ui",
       "external_ui_download_url": "https://ghproxy.cn/https://github.com/Zephyruso/zashboard/archive/refs/heads/gh-pages.zip",
       "external_ui_download_detour": "direct",
