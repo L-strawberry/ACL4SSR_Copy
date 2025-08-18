@@ -15,7 +15,7 @@ https://raw.githubusercontent.com/L-strawberry/ACL4SSR_Copy/refs/heads/main/sing
 
 - **Sub-Store 脚本**:
 ```
-https://raw.githubusercontent.com/L-strawberry/ACL4SSR_Copy/refs/heads/main/singbox/tample.js#type=1&name=all&outbound=🕳Proxy|Emby|Final🕳ℹ️HongKong🏷ℹ️港|hk|hongkong|kong kong|🇭🇰🕳ℹ️Taiwan🏷ℹ️台|tw|taiwan|🇹🇼🕳ℹ️Japan🏷ℹ️日本|jp|japan|🇯🇵🕳ℹ️Telegram|Singapore🏷ℹ️^(?!.(?:us)).(新|sg|singapore|🇸🇬)🕳ℹ️United States🏷ℹ️美|us|unitedstates|united states|🇺🇸
+https://raw.githubusercontent.com/L-strawberry/ACL4SSR_Copy/refs/heads/main/singbox/tample.js#type=1&name=all&outbound=🕳Proxy|Emby|Final🕳ℹ️HongKong🏷ℹ️港|hk|hongkong|kong kong|🇭🇰🕳ℹ️Taiwan🏷ℹ️台|tw|taiwan|🇹🇼🕳ℹ️Japan🏷ℹ️日本|jp|japan|🇯🇵🕳ℹ️Telegram🏷ℹ️日本|jp|japan|🇯🇵|^(?!.(?:us)).*(新|sg|singapore|🇸🇬)🕳ℹ️Singapore🏷ℹ️^(?!.(?:us)).*(新|sg|singapore|🇸🇬)🕳ℹ️United States🏷ℹ️美|us|unitedstates|united states|🇺🇸
 ```
 ### 脚本说明
 
