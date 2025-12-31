@@ -7,7 +7,7 @@
 
 - **sing-box 配置:**
 ```
-https://raw.githubusercontent.com/L-strawberry/ACL4SSR_Copy/refs/heads/main/singbox/sing-box.json
+***
 ```
 ## Sub-Store 脚本操作
 
