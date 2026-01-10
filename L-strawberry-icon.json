@@ -31,6 +31,9 @@
     {"name":"bilibili", "url":"https:\/\/raw.githubusercontent.com\/L-strawberry\/ACL4SSR_Copy\/refs\/heads\/main\/ICON_Color\/bilibili.png"},
     {"name":"bing", "url":"https:\/\/raw.githubusercontent.com\/L-strawberry\/ACL4SSR_Copy\/refs\/heads\/main\/ICON_Color\/bing.png"},
     {"name":"fcm", "url":"https:\/\/raw.githubusercontent.com\/L-strawberry\/ACL4SSR_Copy\/refs\/heads\/main\/ICON_Color\/fcm.png"},
-    {"name":"home", "url":"https:\/\/raw.githubusercontent.com\/L-strawberry\/ACL4SSR_Copy\/refs\/heads\/main\/ICON_Color\/home.png"}
+    {"name":"home", "url":"https:\/\/raw.githubusercontent.com\/L-strawberry\/ACL4SSR_Copy\/refs\/heads\/main\/ICON_Color\/home.png"},
+    {"name":"a", "url":"https:\/\/raw.githubusercontent.com\/L-strawberry\/ACL4SSR_Copy\/refs\/heads\/main\/ICON_Color\/a.jpg"},
+    {"name":"q", "url":"https:\/\/raw.githubusercontent.com\/L-strawberry\/ACL4SSR_Copy\/refs\/heads\/main\/ICON_Color\/q.gif"}
   ]
 }
+
