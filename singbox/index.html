@@ -464,971 +464,962 @@
         // ==========================================
         const TEMPLATES = {
             default: {
-                      "log": {
-                        "level": "warn",
-                        "output": "./sing-box.log",
-                        "timestamp": true
-                      },
-                      "dns": {
-                        "servers": [
-                          {
-                            "type": "hosts",
-                            "tag": "hosts",
-                            "path": [
-                              "/etc/hosts",
-                              "$HOME/.hosts"
-                            ],
-                            "predefined": {
-                              "localhost": [
-                                "127.0.0.1"
-                              ],
-                              "dns.alidns.com": [
-                                "223.5.5.5",
-                                "223.6.6.6"
-                              ],
-                              "dns.google": [
-                                "8.8.4.4",
-                                "8.8.8.8"
-                              ]
-                            }
-                          },
-                          {
-                            "type": "local",
-                            "tag": "local"
-                          },
-                          {
-                            "type": "quic",
-                            "tag": "DIRECT-DNS",
-                            "domain_resolver": "local",
-                            "server": "dns.alidns.com",
-                            "server_port": 853
-                          },
-                          {
-                            "type": "https",
-                            "tag": "PROXY-DNS",
-                            "domain_resolver": "local",
-                            "server": "cloudflare-dns.com",
-                            "server_port": 443
-                          },
-                          {
-                            "type": "fakeip",
-                            "tag": "FAKEIP-DNS",
-                            "inet4_range": "198.18.0.0/15"
-                          }
-                        ],
-                        "rules": [
-                          {
-                            "ip_accept_any": true,
-                            "server": "hosts"
-                          },
-                          {
-                            "clash_mode": "GLOBAL",
-                            "server": "PROXY-DNS"
-                          },
-                          {
-                            "rule_set": [
-                              "ChinaDomain",
-                              "private_domain"
-                            ],
-                            "server": "DIRECT-DNS"
-                          },
-                          {
-                            "query_type": [
-                              "A"
-                            ],
-                            "server": "FAKEIP-DNS"
-                          }
-                        ],
-                        "final": "PROXY-DNS",
-                        "strategy": "ipv4_only",
-                        "disable_cache": true,
-                        "disable_expire": true,
-                        "independent_cache": true
-                      },
-                      "inbounds": [
-                        {
-                          "type": "tun",
-                          "tag": "tun-in",
-                          "interface_name": "singbox",
-                          "mtu": 9000,
-                          "address": [
-                            "172.18.0.1/30"
-                          ],
-                          "auto_route": true,
-                          "strict_route": true,
-                          "route_exclude_address": [
-                            "192.168.0.0/16"
-                          ],
-                          "udp_timeout": "5m0s",
-                          "stack": "gvisor",
-                          "platform": {
-                            "http_proxy": {
-                              "enabled": true,
-                              "server": "127.0.0.1",
-                              "server_port": 20120
-                            }
-                          }
-                        },
-                        {
-                          "type": "mixed",
-                          "tag": "mixed-in",
-                          "listen": "::",
-                          "listen_port": 20120
-                        }
-                      ],
-                      "outbounds": [
-                        {
-                          "type": "direct",
-                          "tag": "DIRECT",
-                          "domain_resolver": "local"
-                        },
-                        {
-                          "type": "block",
-                          "tag": "REJECT"
-                        },
-                        {
-                          "type": "selector",
-                          "tag": "PROXY",
-                          "outbounds": [
-                            "JP",
-                            "DIRECT"
-                          ],
-                          "interrupt_exist_connections": true
-                        },
-                        {
-                          "type": "selector",
-                          "tag": "EMBY",
-                          "outbounds": [
-                            "PROXY",
-                            "DIRECT"
-                          ],
-                          "interrupt_exist_connections": true
-                        },
-                        {
-                          "type": "selector",
-                          "tag": "JP",
-                          "outbounds": null,
-                          "interrupt_exist_connections": true
-                        },
-                        {
-                          "type": "selector",
-                          "tag": "ADBLOCK",
-                          "outbounds": [
-                            "REJECT",
-                            "PROXY",
-                            "DIRECT"
-                          ],
-                          "interrupt_exist_connections": true
-                        }
-                      ],
-                      "route": {
-                        "rules": [
-                          {
-                            "action": "sniff"
-                          },
-                          {
-                            "type": "logical",
-                            "mode": "or",
-                            "rules": [
-                              {
-                                "port": 53
-                              },
-                              {
-                                "protocol": "dns"
-                              }
-                            ],
-                            "action": "hijack-dns"
-                          },
-                          {
-                            "action": "route-options",
-                            "udp_disable_domain_unmapping": true,
-                            "udp_connect": true,
-                            "udp_timeout": "5m0s"
-                          },
-                          {
-                            "ip_is_private": true,
-                            "outbound": "DIRECT"
-                          },
-                          {
-                            "domain_keyword": [
-                              "oss",
-                              "ouonet"
-                            ],
-                            "outbound": "DIRECT"
-                          },
-                          {
-                            "rule_set": "Emby",
-                            "outbound": "EMBY"
-                          },
-                          {
-                            "rule_set": "Ads",
-                            "outbound": "ADBLOCK"
-                          },
-                          {
-                            "type": "logical",
-                            "mode": "or",
-                            "rules": [
-                              {
-                                "port": 3478
-                              },
-                              {
-                                "network": "tcp",
-                                "port": 5349
-                              },
-                              {
-                                "network": "udp",
-                                "port": [
-                                  5350,
-                                  5351,
-                                  19302
-                                ]
-                              },
-                              {
-                                "protocol": "stun"
-                              }
-                            ],
-                            "outbound": "DIRECT"
-                          },
-                          {
-                            "rule_set": [
-                              "Telegram",
-                              "AI"
-                            ],
-                            "outbound": "JP"
-                          },
-                          {
-                            "rule_set": [
-                              "YouTube",
-                              "Google",
-                              "google-play",
-                              "google-play@cn",
-                              "Github",
-                              "Twitter",
-                              "Bahamut",
-                              "Netflix",
-                              "Disney",
-                              "PrimeVideo",
-                              "HBO",
-                              "TikTok",
-                              "AppleProxy",
-                              "Spotify"
-                            ],
-                            "outbound": "PROXY"
-                          },
-                          {
-                            "action": "resolve"
-                          },
-                          {
-                            "type": "logical",
-                            "mode": "or",
-                            "rules": [
-                              {
-                                "type": "logical",
-                                "mode": "and",
-                                "rules": [
-                                  {
-                                    "rule_set": "Microsoft"
-                                  },
-                                  {
-                                    "rule_set": "OneDrive"
-                                  },
-                                  {
-                                    "rule_set": "ChinaDomain"
-                                  },
-                                  {
-                                    "rule_set": "ChinaIP"
-                                  }
-                                ]
-                              },
-                              {
-                                "rule_set": "ChinaIP"
-                              },
-                              {
-                                "rule_set": [
-                                  "private_domain",
-                                  "private_ip"
-                                ]
-                              }
-                            ],
-                            "outbound": "DIRECT"
-                          },
-                          {
-                            "clash_mode": "GLOBAL",
-                            "outbound": "PROXY"
-                          }
-                        ],
-                        "rule_set": [
-                          {
-                            "type": "remote",
-                            "tag": "Ads",
-                            "url": "https://ghfast.top/raw.githubusercontent.com/217heidai/adblockfilters/main/rules/adblocksingbox.srs",
-                            "download_detour": "DIRECT",
-                            "update_interval": "24h0m0s"
-                          },
-                          {
-                            "type": "remote",
-                            "tag": "Emby",
-                            "url": "https://ghfast.top/raw.githubusercontent.com/L-strawberry/ACL4SSR_Copy/main/singbox/rules/Emby.srs",
-                            "download_detour": "DIRECT",
-                            "update_interval": "24h0m0s"
-                          },
-                          {
-                            "type": "remote",
-                            "tag": "private_ip",
-                            "url": "https://jsd.onmicrosoft.cn/gh/DustinWin/ruleset_geodata@sing-box-ruleset/privateip.srs",
-                            "download_detour": "DIRECT",
-                            "update_interval": "24h0m0s"
-                          },
-                          {
-                            "type": "remote",
-                            "tag": "private_domain",
-                            "url": "https://jsd.onmicrosoft.cn/gh/DustinWin/ruleset_geodata@sing-box-ruleset/private.srs",
-                            "download_detour": "DIRECT",
-                            "update_interval": "24h0m0s"
-                          },
-                          {
-                            "type": "remote",
-                            "tag": "Telegram",
-                            "url": "https://ghfast.top/raw.githubusercontent.com/Repcz/Tool/X/sing-box/Rules/Telegram.srs",
-                            "download_detour": "DIRECT",
-                            "update_interval": "24h0m0s"
-                          },
-                          {
-                            "type": "remote",
-                            "tag": "YouTube",
-                            "url": "https://ghfast.top/raw.githubusercontent.com/Repcz/Tool/X/sing-box/Rules/YouTube.srs",
-                            "download_detour": "DIRECT",
-                            "update_interval": "24h0m0s"
-                          },
-                          {
-                            "type": "remote",
-                            "tag": "Google",
-                            "url": "https://ghfast.top/raw.githubusercontent.com/Repcz/Tool/X/sing-box/Rules/Google.srs",
-                            "download_detour": "DIRECT",
-                            "update_interval": "24h0m0s"
-                          },
-                          {
-                            "type": "remote",
-                            "tag": "google-play",
-                            "url": "https://ghfast.top/raw.githubusercontent.com/MetaCubeX/meta-rules-dat/sing/geo/geosite/google-play.srs",
-                            "download_detour": "DIRECT",
-                            "update_interval": "24h0m0s"
-                          },
-                          {
-                            "type": "remote",
-                            "tag": "google-play@cn",
-                            "url": "https://ghfast.top/raw.githubusercontent.com/MetaCubeX/meta-rules-dat/sing/geo/geosite/google-play@cn.srs",
-                            "download_detour": "DIRECT",
-                            "update_interval": "24h0m0s"
-                          },
-                          {
-                            "type": "remote",
-                            "tag": "Microsoft",
-                            "url": "https://ghfast.top/raw.githubusercontent.com/Repcz/Tool/X/sing-box/Rules/Microsoft.srs",
-                            "download_detour": "DIRECT",
-                            "update_interval": "24h0m0s"
-                          },
-                          {
-                            "type": "remote",
-                            "tag": "OneDrive",
-                            "url": "https://ghfast.top/raw.githubusercontent.com/Repcz/Tool/X/sing-box/Rules/OneDrive.srs",
-                            "download_detour": "DIRECT",
-                            "update_interval": "24h0m0s"
-                          },
-                          {
-                            "type": "remote",
-                            "tag": "Github",
-                            "url": "https://ghfast.top/raw.githubusercontent.com/Repcz/Tool/X/sing-box/Rules/Github.srs",
-                            "download_detour": "DIRECT",
-                            "update_interval": "24h0m0s"
-                          },
-                          {
-                            "type": "remote",
-                            "tag": "Twitter",
-                            "url": "https://ghfast.top/raw.githubusercontent.com/Repcz/Tool/X/sing-box/Rules/Twitter.srs",
-                            "download_detour": "DIRECT",
-                            "update_interval": "24h0m0s"
-                          },
-                          {
-                            "type": "remote",
-                            "tag": "AppleProxy",
-                            "url": "https://ghfast.top/raw.githubusercontent.com/Repcz/Tool/X/sing-box/Rules/AppleProxy.srs",
-                            "download_detour": "DIRECT",
-                            "update_interval": "24h0m0s"
-                          },
-                          {
-                            "type": "remote",
-                            "tag": "AI",
-                            "url": "https://ghfast.top/raw.githubusercontent.com/Repcz/Tool/X/sing-box/Rules/AI.srs",
-                            "download_detour": "DIRECT",
-                            "update_interval": "24h0m0s"
-                          },
-                          {
-                            "type": "remote",
-                            "tag": "Spotify",
-                            "url": "https://ghfast.top/raw.githubusercontent.com/Repcz/Tool/X/sing-box/Rules/Spotify.srs",
-                            "download_detour": "DIRECT",
-                            "update_interval": "24h0m0s"
-                          },
-                          {
-                            "type": "remote",
-                            "tag": "Bahamut",
-                            "url": "https://ghfast.top/raw.githubusercontent.com/Repcz/Tool/X/sing-box/Rules/Bahamut.srs",
-                            "download_detour": "DIRECT",
-                            "update_interval": "24h0m0s"
-                          },
-                          {
-                            "type": "remote",
-                            "tag": "Netflix",
-                            "url": "https://ghfast.top/raw.githubusercontent.com/Repcz/Tool/X/sing-box/Rules/Netflix.srs",
-                            "download_detour": "DIRECT",
-                            "update_interval": "24h0m0s"
-                          },
-                          {
-                            "type": "remote",
-                            "tag": "Disney",
-                            "url": "https://ghfast.top/raw.githubusercontent.com/Repcz/Tool/X/sing-box/Rules/Disney.srs",
-                            "download_detour": "DIRECT",
-                            "update_interval": "24h0m0s"
-                          },
-                          {
-                            "type": "remote",
-                            "tag": "PrimeVideo",
-                            "url": "https://ghfast.top/raw.githubusercontent.com/Repcz/Tool/X/sing-box/Rules/PrimeVideo.srs",
-                            "download_detour": "DIRECT",
-                            "update_interval": "24h0m0s"
-                          },
-                          {
-                            "type": "remote",
-                            "tag": "HBO",
-                            "url": "https://ghfast.top/raw.githubusercontent.com/Repcz/Tool/X/sing-box/Rules/HBO.srs",
-                            "download_detour": "DIRECT",
-                            "update_interval": "24h0m0s"
-                          },
-                          {
-                            "type": "remote",
-                            "tag": "TikTok",
-                            "url": "https://ghfast.top/raw.githubusercontent.com/Repcz/Tool/X/sing-box/Rules/TikTok.srs",
-                            "download_detour": "DIRECT",
-                            "update_interval": "24h0m0s"
-                          },
-                          {
-                            "type": "remote",
-                            "tag": "ChinaDomain",
-                            "url": "https://ghfast.top/raw.githubusercontent.com/MetaCubeX/meta-rules-dat/sing/geo/geosite/cn.srs",
-                            "download_detour": "DIRECT",
-                            "update_interval": "24h0m0s"
-                          },
-                          {
-                            "type": "remote",
-                            "tag": "ChinaIP",
-                            "url": "https://ghfast.top/raw.githubusercontent.com/MetaCubeX/meta-rules-dat/sing/geo/geoip/cn.srs",
-                            "download_detour": "DIRECT",
-                            "update_interval": "24h0m0s"
-                          }
-                        ],
-                        "final": "PROXY",
-                        "auto_detect_interface": true,
-                        "default_domain_resolver": {
-                          "server": "DIRECT-DNS",
-                          "strategy": "ipv4_only"
-                        }
-                      },
-                      "experimental": {
-                        "cache_file": {
-                          "enabled": true,
-                          "store_fakeip": true,
-                          "store_rdrc": true,
-                          "rdrc_timeout": "24h0m0s"
-                        },
-                        "clash_api": {
-                          "external_controller": "127.0.0.1:9090",
-                          "external_ui": "ui",
-                          "external_ui_download_url": "https://ghfast.top/github.com/Zephyruso/zashboard/archive/refs/heads/gh-pages.zip",
-                          "external_ui_download_detour": "DIRECT",
-                          "secret": "we123456",
-                          "default_mode": "RULE",
-                          "access_control_allow_private_network": true
-                        }
-                      }
-                    },            
+  "log": {
+    "level": "warn",
+    "output": "./sing-box.log",
+    "timestamp": true
+  },
+  "dns": {
+    "servers": [
+      {
+        "tag": "proxy_server_dns",
+        "type": "https",
+        "server": "doh.pub",
+        "domain_resolver": "hosts"
+      },
+      {
+        "tag": "direct_dns",
+        "type": "https",
+        "server": "dns.alidns.com",
+        "domain_resolver": "hosts"
+      },
+      {
+        "tag": "proxy_dns",
+        "type": "https",
+        "server": "cloudflare-dns.com",
+        "domain_resolver": "hosts",
+        "detour": "PROXY"
+      },
+      {
+        "tag": "local",
+        "type": "local"
+      },
+      {
+        "tag": "fake-ip-dns-server",
+        "type": "fakeip",
+        "inet4_range": "198.18.0.0/15",
+        "inet6_range": "fc00::/64"
+      },
+      {
+        "tag": "hosts",
+        "type": "hosts",
+        "predefined": {
+          "dns.alidns.com": [
+            "223.5.5.5",
+            "223.6.6.6"
+          ],
+          "doh.pub": [
+            "1.12.12.21",
+            "120.53.53.53"
+          ],
+          "dns.google": [
+            "8.8.8.8",
+            "8.8.4.4"
+          ],
+          "cloudflare-dns.com": [
+            "104.16.248.249",
+            "104.16.249.249"
+          ]
+        }
+      }
+    ],
+    "rules": [
+      {
+        "clash_mode": "GLOBAL",
+        "server": "proxy_dns"
+      },
+      {
+        "domain_suffix": [
+          "market.xiaomi.com",
+          "lancache.steamcontent.com"
+        ],
+        "server": "direct_dns"
+      },
+      {
+        "query_type": [
+          "SVCB",
+          "HTTPS"
+        ],
+        "action": "predefined",
+        "rcode": "NOTIMP"
+      },
+      {
+        "query_type": [
+          "A",
+          "AAAA"
+        ],
+        "server": "fake-ip-dns-server",
+        "rewrite_ttl": 0
+      },
+      {
+        "domain_suffix": [
+          ".arpa"
+        ],
+        "server": "local"
+      }
+    ],
+    "final": "proxy_dns",
+    "independent_cache": true,
+    "cache_capacity": 4096
+  },
+  "inbounds": [
+    {
+      "type": "tun",
+      "tag": "tun-in",
+      "interface_name": "singbox——reF1nd",
+      "mtu": 9000,
+      "address": ["172.18.0.1/30"],
+      "auto_route": true,
+      "strict_route": true,
+      "route_exclude_address": ["192.168.0.0/16"],
+      "udp_timeout": "5m0s",
+      "platform": {
+        "http_proxy": {
+          "enabled": true,
+          "server": "127.0.0.1",
+          "server_port": 20120
+        }
+      }
+    },
+    {
+      "type": "mixed",
+      "tag": "mixed-in",
+      "listen": "::",
+      "listen_port": 20120
+    }
+  ],
+  "outbounds": [
+    {
+      "type": "direct",
+      "tag": "DIRECT",
+      "domain_resolver": "local"
+    },
+    {
+      "type": "block",
+      "tag": "REJECT"
+    },
+    {
+      "type": "selector",
+      "tag": "PROXY",
+      "outbounds": ["JP", "DIRECT"],
+      "interrupt_exist_connections": true
+    },
+    {
+      "type": "selector",
+      "tag": "EMBY",
+      "outbounds": ["PROXY", "DIRECT"],
+      "interrupt_exist_connections": true
+    },
+    {
+      "type": "selector",
+      "tag": "JP",
+      "outbounds": null,
+      "interrupt_exist_connections": true
+    },
+    {
+      "type": "selector",
+      "tag": "ADBLOCK",
+      "outbounds": ["REJECT", "PROXY", "DIRECT"],
+      "interrupt_exist_connections": true
+    }
+  ],
+  "route": {
+    "rules": [
+      {
+        "action": "sniff"
+      },
+      {
+        "type": "logical",
+        "mode": "or",
+        "rules": [
+          {
+            "port": 53
+          },
+          {
+            "protocol": "dns"
+          }
+        ],
+        "action": "hijack-dns"
+      },
+      {
+        "action": "route-options",
+        "udp_disable_domain_unmapping": true,
+        "udp_connect": true,
+        "udp_timeout": "5m0s"
+      },
+      {
+        "ip_is_private": true,
+        "outbound": "DIRECT"
+      },
+      {
+        "domain_keyword": ["oss", "ouonet"],
+        "outbound": "DIRECT"
+      },
+      {
+        "rule_set": "Emby",
+        "outbound": "EMBY"
+      },
+      {
+        "rule_set": "Ads",
+        "outbound": "ADBLOCK"
+      },
+      {
+        "type": "logical",
+        "mode": "or",
+        "rules": [
+          {
+            "port": 3478
+          },
+          {
+            "network": "tcp",
+            "port": 5349
+          },
+          {
+            "network": "udp",
+            "port": [5350, 5351, 19302]
+          },
+          {
+            "protocol": "stun"
+          }
+        ],
+        "outbound": "DIRECT"
+      },
+      {
+        "rule_set": ["Telegram", "AI"],
+        "outbound": "JP"
+      },
+      {
+        "rule_set": [
+          "YouTube",
+          "Google",
+          "google-play",
+          "google-play@cn",
+          "Github",
+          "Twitter",
+          "Bahamut",
+          "Netflix",
+          "Disney",
+          "PrimeVideo",
+          "HBO",
+          "TikTok",
+          "AppleProxy",
+          "Spotify"
+        ],
+        "outbound": "PROXY"
+      },
+      {
+        "action": "resolve"
+      },
+      {
+        "type": "logical",
+        "mode": "or",
+        "rules": [
+          {
+            "type": "logical",
+            "mode": "and",
+            "rules": [
+              {
+                "rule_set": "Microsoft"
+              },
+              {
+                "rule_set": "OneDrive"
+              },
+              {
+                "rule_set": "ChinaDomain"
+              },
+              {
+                "rule_set": "ChinaIP"
+              }
+            ]
+          },
+          {
+            "rule_set": "ChinaIP"
+          },
+          {
+            "rule_set": ["private_domain", "private_ip"]
+          }
+        ],
+        "outbound": "DIRECT"
+      },
+      {
+        "clash_mode": "GLOBAL",
+        "outbound": "PROXY"
+      }
+    ],
+    "rule_set": [
+      {
+        "type": "remote",
+        "tag": "Ads",
+        "url": "https://ghfast.top/raw.githubusercontent.com/217heidai/adblockfilters/main/rules/adblocksingbox.srs",
+        "download_detour": "DIRECT",
+        "update_interval": "24h0m0s"
+      },
+      {
+        "type": "remote",
+        "tag": "Emby",
+        "url": "https://gh.568641.xyz/raw.githubusercontent.com/L-strawberry/ACL4SSR_Copy/main/singbox/rules/Emby.srs",
+        "download_detour": "DIRECT",
+        "update_interval": "24h0m0s"
+      },
+      {
+        "type": "remote",
+        "tag": "private_ip",
+        "url": "https://jsd.onmicrosoft.cn/gh/DustinWin/ruleset_geodata@sing-box-ruleset/privateip.srs",
+        "download_detour": "DIRECT",
+        "update_interval": "24h0m0s"
+      },
+      {
+        "type": "remote",
+        "tag": "private_domain",
+        "url": "https://jsd.onmicrosoft.cn/gh/DustinWin/ruleset_geodata@sing-box-ruleset/private.srs",
+        "download_detour": "DIRECT",
+        "update_interval": "24h0m0s"
+      },
+      {
+        "type": "remote",
+        "tag": "Telegram",
+        "url": "https://ghfast.top/raw.githubusercontent.com/Repcz/Tool/X/sing-box/Rules/Telegram.srs",
+        "download_detour": "DIRECT",
+        "update_interval": "24h0m0s"
+      },
+      {
+        "type": "remote",
+        "tag": "YouTube",
+        "url": "https://ghfast.top/raw.githubusercontent.com/Repcz/Tool/X/sing-box/Rules/YouTube.srs",
+        "download_detour": "DIRECT",
+        "update_interval": "24h0m0s"
+      },
+      {
+        "type": "remote",
+        "tag": "Google",
+        "url": "https://ghfast.top/raw.githubusercontent.com/Repcz/Tool/X/sing-box/Rules/Google.srs",
+        "download_detour": "DIRECT",
+        "update_interval": "24h0m0s"
+      },
+      {
+        "type": "remote",
+        "tag": "google-play",
+        "url": "https://ghfast.top/raw.githubusercontent.com/MetaCubeX/meta-rules-dat/sing/geo/geosite/google-play.srs",
+        "download_detour": "DIRECT",
+        "update_interval": "24h0m0s"
+      },
+      {
+        "type": "remote",
+        "tag": "google-play@cn",
+        "url": "https://ghfast.top/raw.githubusercontent.com/MetaCubeX/meta-rules-dat/sing/geo/geosite/google-play@cn.srs",
+        "download_detour": "DIRECT",
+        "update_interval": "24h0m0s"
+      },
+      {
+        "type": "remote",
+        "tag": "Microsoft",
+        "url": "https://ghfast.top/raw.githubusercontent.com/Repcz/Tool/X/sing-box/Rules/Microsoft.srs",
+        "download_detour": "DIRECT",
+        "update_interval": "24h0m0s"
+      },
+      {
+        "type": "remote",
+        "tag": "OneDrive",
+        "url": "https://ghfast.top/raw.githubusercontent.com/Repcz/Tool/X/sing-box/Rules/OneDrive.srs",
+        "download_detour": "DIRECT",
+        "update_interval": "24h0m0s"
+      },
+      {
+        "type": "remote",
+        "tag": "Github",
+        "url": "https://ghfast.top/raw.githubusercontent.com/Repcz/Tool/X/sing-box/Rules/Github.srs",
+        "download_detour": "DIRECT",
+        "update_interval": "24h0m0s"
+      },
+      {
+        "type": "remote",
+        "tag": "Twitter",
+        "url": "https://ghfast.top/raw.githubusercontent.com/Repcz/Tool/X/sing-box/Rules/Twitter.srs",
+        "download_detour": "DIRECT",
+        "update_interval": "24h0m0s"
+      },
+      {
+        "type": "remote",
+        "tag": "AppleProxy",
+        "url": "https://ghfast.top/raw.githubusercontent.com/Repcz/Tool/X/sing-box/Rules/AppleProxy.srs",
+        "download_detour": "DIRECT",
+        "update_interval": "24h0m0s"
+      },
+      {
+        "type": "remote",
+        "tag": "AI",
+        "url": "https://ghfast.top/raw.githubusercontent.com/Repcz/Tool/X/sing-box/Rules/AI.srs",
+        "download_detour": "DIRECT",
+        "update_interval": "24h0m0s"
+      },
+      {
+        "type": "remote",
+        "tag": "Spotify",
+        "url": "https://ghfast.top/raw.githubusercontent.com/Repcz/Tool/X/sing-box/Rules/Spotify.srs",
+        "download_detour": "DIRECT",
+        "update_interval": "24h0m0s"
+      },
+      {
+        "type": "remote",
+        "tag": "Bahamut",
+        "url": "https://ghfast.top/raw.githubusercontent.com/Repcz/Tool/X/sing-box/Rules/Bahamut.srs",
+        "download_detour": "DIRECT",
+        "update_interval": "24h0m0s"
+      },
+      {
+        "type": "remote",
+        "tag": "Netflix",
+        "url": "https://ghfast.top/raw.githubusercontent.com/Repcz/Tool/X/sing-box/Rules/Netflix.srs",
+        "download_detour": "DIRECT",
+        "update_interval": "24h0m0s"
+      },
+      {
+        "type": "remote",
+        "tag": "Disney",
+        "url": "https://ghfast.top/raw.githubusercontent.com/Repcz/Tool/X/sing-box/Rules/Disney.srs",
+        "download_detour": "DIRECT",
+        "update_interval": "24h0m0s"
+      },
+      {
+        "type": "remote",
+        "tag": "PrimeVideo",
+        "url": "https://ghfast.top/raw.githubusercontent.com/Repcz/Tool/X/sing-box/Rules/PrimeVideo.srs",
+        "download_detour": "DIRECT",
+        "update_interval": "24h0m0s"
+      },
+      {
+        "type": "remote",
+        "tag": "HBO",
+        "url": "https://ghfast.top/raw.githubusercontent.com/Repcz/Tool/X/sing-box/Rules/HBO.srs",
+        "download_detour": "DIRECT",
+        "update_interval": "24h0m0s"
+      },
+      {
+        "type": "remote",
+        "tag": "TikTok",
+        "url": "https://ghfast.top/raw.githubusercontent.com/Repcz/Tool/X/sing-box/Rules/TikTok.srs",
+        "download_detour": "DIRECT",
+        "update_interval": "24h0m0s"
+      },
+      {
+        "type": "remote",
+        "tag": "ChinaDomain",
+        "url": "https://ghfast.top/raw.githubusercontent.com/MetaCubeX/meta-rules-dat/sing/geo/geosite/cn.srs",
+        "download_detour": "DIRECT",
+        "update_interval": "24h0m0s"
+      },
+      {
+        "type": "remote",
+        "tag": "ChinaIP",
+        "url": "https://ghfast.top/raw.githubusercontent.com/MetaCubeX/meta-rules-dat/sing/geo/geoip/cn.srs",
+        "download_detour": "DIRECT",
+        "update_interval": "24h0m0s"
+      }
+    ],
+    "final": "PROXY",
+    "auto_detect_interface": true,
+    "default_domain_resolver": {
+      "server": "direct_dns",
+      "strategy": "ipv4_only"
+    }
+  },
+  "experimental": {
+    "cache_file": {
+      "enabled": true,
+      "store_fakeip": true,
+      "store_rdrc": true,
+      "rdrc_timeout": "24h0m0s"
+    },
+    "clash_api": {
+      "external_controller": "127.0.0.1:9090",
+      "external_ui": "ui",
+      "external_ui_download_url": "https://ghfast.top/github.com/Zephyruso/zashboard/archive/refs/heads/gh-pages.zip",
+      "external_ui_download_detour": "DIRECT",
+      "secret": "we123456",
+      "default_mode": "RULE",
+      "access_control_allow_private_network": true
+    }
+  }
+},            
             reF1nd: {
-                      "log": {
-                        "level": "warn",
-                        "output": "./sing-box.log",
-                        "timestamp": true
-                      },
-                      "dns": {
-                        "servers": [
-                          {
-                            "tag": "proxy_server_dns",
-                            "type": "https",
-                            "server": "doh.pub",
-                            "domain_resolver": "hosts"
-                          },
-                          {
-                            "tag": "direct_dns",
-                            "type": "https",
-                            "server": "dns.alidns.com",
-                            "domain_resolver": "hosts"
-                          },
-                          {
-                            "tag": "proxy_dns",
-                            "type": "https",
-                            "server": "cloudflare-dns.com",
-                            "domain_resolver": "hosts",
-                            "detour": "PROXY"
-                          },
-                          {
-                            "tag": "local",
-                            "type": "local"
-                          },
-                          {
-                            "tag": "fake-ip-dns-server",
-                            "type": "fakeip",
-                            "inet4_range": "198.18.0.0/15",
-                            "inet6_range": "fc00::/64"
-                          },
-                          {
-                            "tag": "hosts",
-                            "type": "hosts",
-                            "predefined": {
-                              "dns.alidns.com": ["223.5.5.5", "223.6.6.6"],
-                              "doh.pub": ["1.12.12.21", "120.53.53.53"],
-                              "dns.google": ["8.8.8.8", "8.8.4.4"],
-                              "cloudflare-dns.com": ["104.16.248.249", "104.16.249.249"]
-                            }
-                          }
-                        ],
-                        "rules": [
-                          {
-                            "clash_mode": "Global",
-                            "query_type": ["A", "AAAA"],
-                            "server": "fake-ip-dns-server",
-                            "rewrite_ttl": 0
-                          },
-                          {
-                            "clash_mode": "Global",
-                            "server": "proxy_dns"
-                          },
-                          {
-                            "clash_mode": "Direct",
-                            "server": "direct_dns"
-                          },
-                          {
-                            "domain_suffix": ["market.xiaomi.com", "lancache.steamcontent.com"],
-                            "server": "direct_dns"
-                          },
-                          {
-                            "query_type": ["SVCB", "HTTPS"],
-                            "action": "predefined",
-                            "rcode": "NOTIMP"
-                          },
-                          {
-                            "query_type": ["A", "AAAA"],
-                            "server": "fake-ip-dns-server",
-                            "rewrite_ttl": 0
-                          },
-                          {
-                            "domain_suffix": [".arpa"],
-                            "server": "local"
-                          },
-                          {
-                            "rule_set": "gfw",
-                            "server": "proxy_dns"
-                          }
-                        ],
-                        "final": "direct_dns",
-                        "independent_cache": true,
-                        "cache_capacity": 4096
-                      },
-                      "inbounds": [
-                        {
-                          "type": "tun",
-                          "tag": "tun-in",
-                          "interface_name": "singbox——reF1nd",
-                          "mtu": 9000,
-                          "address": ["172.18.0.1/30"],
-                          "auto_route": true,
-                          "strict_route": true,
-                          "route_exclude_address": ["192.168.0.0/16"],
-                          "udp_timeout": "5m0s",
-                          "platform": {
-                            "http_proxy": {
-                              "enabled": true,
-                              "server": "127.0.0.1",
-                              "server_port": 20120
-                            }
-                          }
-                        },
-                        {
-                          "type": "mixed",
-                          "tag": "mixed-in",
-                          "listen": "::",
-                          "listen_port": 20120
-                        }
-                      ],
-                      "outbounds": [
-                        {
-                          "type": "direct",
-                          "tag": "DIRECT",
-                          "domain_resolver": "local"
-                        },
-                        {
-                          "type": "block",
-                          "tag": "REJECT"
-                        },
-                        {
-                          "type": "selector",
-                          "tag": "PROXY",
-                          "outbounds": ["JP", "DIRECT"],
-                          "interrupt_exist_connections": true
-                        },
-                        {
-                          "type": "selector",
-                          "tag": "EMBY",
-                          "outbounds": ["PROXY", "DIRECT"],
-                          "interrupt_exist_connections": true
-                        },
-                        {
-                          "type": "selector",
-                          "tag": "JP",
-                          "outbounds": null,
-                          "interrupt_exist_connections": true
-                        },
-                        {
-                          "type": "selector",
-                          "tag": "ADBLOCK",
-                          "outbounds": ["REJECT", "PROXY", "DIRECT"],
-                          "interrupt_exist_connections": true
-                        }
-                      ],
-                      "route": {
-                        "rules": [
-                          {
-                            "action": "sniff"
-                          },
-                          {
-                            "type": "logical",
-                            "mode": "or",
-                            "rules": [
-                              {
-                                "port": 53
-                              },
-                              {
-                                "protocol": "dns"
-                              }
-                            ],
-                            "action": "hijack-dns"
-                          },
-                          {
-                            "action": "route-options",
-                            "udp_disable_domain_unmapping": true,
-                            "udp_connect": true,
-                            "udp_timeout": "5m0s"
-                          },
-                          {
-                            "ip_is_private": true,
-                            "outbound": "DIRECT"
-                          },
-                          {
-                            "domain_keyword": ["oss", "ouonet"],
-                            "outbound": "DIRECT"
-                          },
-                          {
-                            "rule_set": "Emby",
-                            "outbound": "EMBY"
-                          },
-                          {
-                            "rule_set": "Ads",
-                            "outbound": "ADBLOCK"
-                          },
-                          {
-                            "type": "logical",
-                            "mode": "or",
-                            "rules": [
-                              {
-                                "port": 3478
-                              },
-                              {
-                                "network": "tcp",
-                                "port": 5349
-                              },
-                              {
-                                "network": "udp",
-                                "port": [5350, 5351, 19302]
-                              },
-                              {
-                                "protocol": "stun"
-                              }
-                            ],
-                            "outbound": "DIRECT"
-                          },
-                          {
-                            "rule_set": ["Telegram", "AI"],
-                            "outbound": "JP"
-                          },
-                          {
-                            "rule_set": [
-                              "YouTube",
-                              "Google",
-                              "google-play",
-                              "google-play@cn",
-                              "Github",
-                              "Twitter",
-                              "Bahamut",
-                              "Netflix",
-                              "Disney",
-                              "PrimeVideo",
-                              "HBO",
-                              "TikTok",
-                              "AppleProxy",
-                              "Spotify"
-                            ],
-                            "outbound": "PROXY"
-                          },
-                          {
-                            "action": "resolve"
-                          },
-                          {
-                            "type": "logical",
-                            "mode": "or",
-                            "rules": [
-                              {
-                                "type": "logical",
-                                "mode": "and",
-                                "rules": [
-                                  {
-                                    "rule_set": "Microsoft"
-                                  },
-                                  {
-                                    "rule_set": "OneDrive"
-                                  },
-                                  {
-                                    "rule_set": "ChinaDomain"
-                                  },
-                                  {
-                                    "rule_set": "ChinaIP"
-                                  }
-                                ]
-                              },
-                              {
-                                "rule_set": "ChinaIP"
-                              },
-                              {
-                                "rule_set": ["private_domain", "private_ip"]
-                              }
-                            ],
-                            "outbound": "DIRECT"
-                          },
-                          {
-                            "clash_mode": "GLOBAL",
-                            "outbound": "PROXY"
-                          }
-                        ],
-                        "rule_set": [
-                          {
-                            "type": "remote",
-                            "tag": "Ads",
-                            "url": "https://ghfast.top/raw.githubusercontent.com/217heidai/adblockfilters/main/rules/adblocksingbox.srs",
-                            "download_detour": "DIRECT",
-                            "update_interval": "24h0m0s"
-                          },
-                          {
-                            "type": "remote",
-                            "tag": "Emby",
-                            "url": "https://ghfast.top/raw.githubusercontent.com/L-strawberry/ACL4SSR_Copy/main/singbox/rules/Emby.srs",
-                            "download_detour": "DIRECT",
-                            "update_interval": "24h0m0s"
-                          },
-                          {
-                            "type": "remote",
-                            "tag": "private_ip",
-                            "url": "https://jsd.onmicrosoft.cn/gh/DustinWin/ruleset_geodata@sing-box-ruleset/privateip.srs",
-                            "download_detour": "DIRECT",
-                            "update_interval": "24h0m0s"
-                          },
-                          {
-                            "type": "remote",
-                            "tag": "private_domain",
-                            "url": "https://jsd.onmicrosoft.cn/gh/DustinWin/ruleset_geodata@sing-box-ruleset/private.srs",
-                            "download_detour": "DIRECT",
-                            "update_interval": "24h0m0s"
-                          },
-                          {
-                            "type": "remote",
-                            "tag": "Telegram",
-                            "url": "https://ghfast.top/raw.githubusercontent.com/Repcz/Tool/X/sing-box/Rules/Telegram.srs",
-                            "download_detour": "DIRECT",
-                            "update_interval": "24h0m0s"
-                          },
-                          {
-                            "type": "remote",
-                            "tag": "YouTube",
-                            "url": "https://ghfast.top/raw.githubusercontent.com/Repcz/Tool/X/sing-box/Rules/YouTube.srs",
-                            "download_detour": "DIRECT",
-                            "update_interval": "24h0m0s"
-                          },
-                          {
-                            "type": "remote",
-                            "tag": "Google",
-                            "url": "https://ghfast.top/raw.githubusercontent.com/Repcz/Tool/X/sing-box/Rules/Google.srs",
-                            "download_detour": "DIRECT",
-                            "update_interval": "24h0m0s"
-                          },
-                          {
-                            "type": "remote",
-                            "tag": "google-play",
-                            "url": "https://ghfast.top/raw.githubusercontent.com/MetaCubeX/meta-rules-dat/sing/geo/geosite/google-play.srs",
-                            "download_detour": "DIRECT",
-                            "update_interval": "24h0m0s"
-                          },
-                          {
-                            "type": "remote",
-                            "tag": "google-play@cn",
-                            "url": "https://ghfast.top/raw.githubusercontent.com/MetaCubeX/meta-rules-dat/sing/geo/geosite/google-play@cn.srs",
-                            "download_detour": "DIRECT",
-                            "update_interval": "24h0m0s"
-                          },
-                          {
-                            "type": "remote",
-                            "tag": "Microsoft",
-                            "url": "https://ghfast.top/raw.githubusercontent.com/Repcz/Tool/X/sing-box/Rules/Microsoft.srs",
-                            "download_detour": "DIRECT",
-                            "update_interval": "24h0m0s"
-                          },
-                          {
-                            "type": "remote",
-                            "tag": "OneDrive",
-                            "url": "https://ghfast.top/raw.githubusercontent.com/Repcz/Tool/X/sing-box/Rules/OneDrive.srs",
-                            "download_detour": "DIRECT",
-                            "update_interval": "24h0m0s"
-                          },
-                          {
-                            "type": "remote",
-                            "tag": "Github",
-                            "url": "https://ghfast.top/raw.githubusercontent.com/Repcz/Tool/X/sing-box/Rules/Github.srs",
-                            "download_detour": "DIRECT",
-                            "update_interval": "24h0m0s"
-                          },
-                          {
-                            "type": "remote",
-                            "tag": "Twitter",
-                            "url": "https://ghfast.top/raw.githubusercontent.com/Repcz/Tool/X/sing-box/Rules/Twitter.srs",
-                            "download_detour": "DIRECT",
-                            "update_interval": "24h0m0s"
-                          },
-                          {
-                            "type": "remote",
-                            "tag": "AppleProxy",
-                            "url": "https://ghfast.top/raw.githubusercontent.com/Repcz/Tool/X/sing-box/Rules/AppleProxy.srs",
-                            "download_detour": "DIRECT",
-                            "update_interval": "24h0m0s"
-                          },
-                          {
-                            "type": "remote",
-                            "tag": "AI",
-                            "url": "https://ghfast.top/raw.githubusercontent.com/Repcz/Tool/X/sing-box/Rules/AI.srs",
-                            "download_detour": "DIRECT",
-                            "update_interval": "24h0m0s"
-                          },
-                          {
-                            "type": "remote",
-                            "tag": "Spotify",
-                            "url": "https://ghfast.top/raw.githubusercontent.com/Repcz/Tool/X/sing-box/Rules/Spotify.srs",
-                            "download_detour": "DIRECT",
-                            "update_interval": "24h0m0s"
-                          },
-                          {
-                            "type": "remote",
-                            "tag": "Bahamut",
-                            "url": "https://ghfast.top/raw.githubusercontent.com/Repcz/Tool/X/sing-box/Rules/Bahamut.srs",
-                            "download_detour": "DIRECT",
-                            "update_interval": "24h0m0s"
-                          },
-                          {
-                            "type": "remote",
-                            "tag": "Netflix",
-                            "url": "https://ghfast.top/raw.githubusercontent.com/Repcz/Tool/X/sing-box/Rules/Netflix.srs",
-                            "download_detour": "DIRECT",
-                            "update_interval": "24h0m0s"
-                          },
-                          {
-                            "type": "remote",
-                            "tag": "Disney",
-                            "url": "https://ghfast.top/raw.githubusercontent.com/Repcz/Tool/X/sing-box/Rules/Disney.srs",
-                            "download_detour": "DIRECT",
-                            "update_interval": "24h0m0s"
-                          },
-                          {
-                            "type": "remote",
-                            "tag": "PrimeVideo",
-                            "url": "https://ghfast.top/raw.githubusercontent.com/Repcz/Tool/X/sing-box/Rules/PrimeVideo.srs",
-                            "download_detour": "DIRECT",
-                            "update_interval": "24h0m0s"
-                          },
-                          {
-                            "type": "remote",
-                            "tag": "HBO",
-                            "url": "https://ghfast.top/raw.githubusercontent.com/Repcz/Tool/X/sing-box/Rules/HBO.srs",
-                            "download_detour": "DIRECT",
-                            "update_interval": "24h0m0s"
-                          },
-                          {
-                            "type": "remote",
-                            "tag": "TikTok",
-                            "url": "https://ghfast.top/raw.githubusercontent.com/Repcz/Tool/X/sing-box/Rules/TikTok.srs",
-                            "download_detour": "DIRECT",
-                            "update_interval": "24h0m0s"
-                          },
-                          {
-                            "type": "remote",
-                            "tag": "ChinaDomain",
-                            "url": "https://ghfast.top/raw.githubusercontent.com/MetaCubeX/meta-rules-dat/sing/geo/geosite/cn.srs",
-                            "download_detour": "DIRECT",
-                            "update_interval": "24h0m0s"
-                          },
-                          {
-                            "type": "remote",
-                            "tag": "ChinaIP",
-                            "url": "https://ghfast.top/raw.githubusercontent.com/MetaCubeX/meta-rules-dat/sing/geo/geoip/cn.srs",
-                            "download_detour": "DIRECT",
-                            "update_interval": "24h0m0s"
-                          },
-                          {
-                            "type": "remote",
-                            "tag": "gfw",
-                            "url": "https://github.com/DustinWin/ruleset_geodata/releases/download/sing-box-ruleset/gfw.srs",
-                            "download_detour": "DIRECT",
-                            "update_interval": "24h0m0s"
-                          }
-                        ],
-                        "final": "PROXY",
-                        "auto_detect_interface": true,
-                        "default_domain_resolver": {
-                          "server": "direct_dns",
-                          "strategy": "ipv4_only"
-                        }
-                      },
-                      "experimental": {
-                        "cache_file": {
-                          "enabled": true,
-                          "store_fakeip": true,
-                          "store_rdrc": true,
-                          "rdrc_timeout": "24h0m0s"
-                        },
-                        "urltest_unified_delay": true,
-                        "clash_api": {
-                          "external_controller": "127.0.0.1:9090",
-                          "external_ui": "ui",
-                          "external_ui_download_url": "https://ghfast.top/github.com/Zephyruso/zashboard/archive/refs/heads/gh-pages.zip",
-                          "external_ui_download_detour": "DIRECT",
-                          "secret": "we123456",
-                          "default_mode": "RULE",
-                          "access_control_allow_private_network": true
-                        }
-                      }
-                    }        
+  "log": {
+    "level": "warn",
+    "output": "./sing-box.log",
+    "timestamp": true
+  },
+  "dns": {
+    "servers": [
+      {
+        "tag": "proxy_server_dns",
+        "type": "https",
+        "server": "doh.pub",
+        "domain_resolver": "hosts"
+      },
+      {
+        "tag": "direct_dns",
+        "type": "https",
+        "server": "dns.alidns.com",
+        "domain_resolver": "hosts"
+      },
+      {
+        "tag": "proxy_dns",
+        "type": "https",
+        "server": "cloudflare-dns.com",
+        "domain_resolver": "hosts",
+        "detour": "PROXY"
+      },
+      {
+        "tag": "local",
+        "type": "local"
+      },
+      {
+        "tag": "fake-ip-dns-server",
+        "type": "fakeip",
+        "inet4_range": "198.18.0.0/15",
+        "inet6_range": "fc00::/64"
+      },
+      {
+        "tag": "hosts",
+        "type": "hosts",
+        "predefined": {
+          "dns.alidns.com": [
+            "223.5.5.5",
+            "223.6.6.6"
+          ],
+          "doh.pub": [
+            "1.12.12.21",
+            "120.53.53.53"
+          ],
+          "dns.google": [
+            "8.8.8.8",
+            "8.8.4.4"
+          ],
+          "cloudflare-dns.com": [
+            "104.16.248.249",
+            "104.16.249.249"
+          ]
+        }
+      }
+    ],
+    "rules": [
+      {
+        "clash_mode": "GLOBAL",
+        "server": "proxy_dns"
+      },
+      {
+        "domain_suffix": [
+          "market.xiaomi.com",
+          "lancache.steamcontent.com"
+        ],
+        "server": "direct_dns"
+      },
+      {
+        "query_type": [
+          "SVCB",
+          "HTTPS"
+        ],
+        "action": "predefined",
+        "rcode": "NOTIMP"
+      },
+      {
+        "query_type": [
+          "A",
+          "AAAA"
+        ],
+        "server": "fake-ip-dns-server",
+        "rewrite_ttl": 0
+      },
+      {
+        "domain_suffix": [
+          ".arpa"
+        ],
+        "server": "local"
+      }
+    ],
+    "final": "proxy_dns",
+    "independent_cache": true,
+    "cache_capacity": 4096
+  },
+  "inbounds": [
+    {
+      "type": "tun",
+      "tag": "tun-in",
+      "interface_name": "singbox——reF1nd",
+      "mtu": 9000,
+      "address": ["172.18.0.1/30"],
+      "auto_route": true,
+      "strict_route": true,
+      "route_exclude_address": ["192.168.0.0/16"],
+      "udp_timeout": "5m0s",
+      "platform": {
+        "http_proxy": {
+          "enabled": true,
+          "server": "127.0.0.1",
+          "server_port": 20120
+        }
+      }
+    },
+    {
+      "type": "mixed",
+      "tag": "mixed-in",
+      "listen": "::",
+      "listen_port": 20120
+    }
+  ],
+  "outbounds": [
+    {
+      "type": "direct",
+      "tag": "DIRECT",
+      "domain_resolver": "local"
+    },
+    {
+      "type": "block",
+      "tag": "REJECT"
+    },
+    {
+      "type": "selector",
+      "tag": "PROXY",
+      "outbounds": ["JP", "DIRECT"],
+      "interrupt_exist_connections": true
+    },
+    {
+      "type": "selector",
+      "tag": "EMBY",
+      "outbounds": ["PROXY", "DIRECT"],
+      "interrupt_exist_connections": true
+    },
+    {
+      "type": "selector",
+      "tag": "JP",
+      "outbounds": null,
+      "interrupt_exist_connections": true
+    },
+    {
+      "type": "selector",
+      "tag": "ADBLOCK",
+      "outbounds": ["REJECT", "PROXY", "DIRECT"],
+      "interrupt_exist_connections": true
+    }
+  ],
+  "route": {
+    "rules": [
+      {
+        "action": "sniff"
+      },
+      {
+        "type": "logical",
+        "mode": "or",
+        "rules": [
+          {
+            "port": 53
+          },
+          {
+            "protocol": "dns"
+          }
+        ],
+        "action": "hijack-dns"
+      },
+      {
+        "action": "route-options",
+        "udp_disable_domain_unmapping": true,
+        "udp_connect": true,
+        "udp_timeout": "5m0s"
+      },
+      {
+        "ip_is_private": true,
+        "outbound": "DIRECT"
+      },
+      {
+        "domain_keyword": ["oss", "ouonet"],
+        "outbound": "DIRECT"
+      },
+      {
+        "rule_set": "Emby",
+        "outbound": "EMBY"
+      },
+      {
+        "rule_set": "Ads",
+        "outbound": "ADBLOCK"
+      },
+      {
+        "type": "logical",
+        "mode": "or",
+        "rules": [
+          {
+            "port": 3478
+          },
+          {
+            "network": "tcp",
+            "port": 5349
+          },
+          {
+            "network": "udp",
+            "port": [5350, 5351, 19302]
+          },
+          {
+            "protocol": "stun"
+          }
+        ],
+        "outbound": "DIRECT"
+      },
+      {
+        "rule_set": ["Telegram", "AI"],
+        "outbound": "JP"
+      },
+      {
+        "rule_set": [
+          "YouTube",
+          "Google",
+          "google-play",
+          "google-play@cn",
+          "Github",
+          "Twitter",
+          "Bahamut",
+          "Netflix",
+          "Disney",
+          "PrimeVideo",
+          "HBO",
+          "TikTok",
+          "AppleProxy",
+          "Spotify"
+        ],
+        "outbound": "PROXY"
+      },
+      {
+        "action": "resolve"
+      },
+      {
+        "type": "logical",
+        "mode": "or",
+        "rules": [
+          {
+            "type": "logical",
+            "mode": "and",
+            "rules": [
+              {
+                "rule_set": "Microsoft"
+              },
+              {
+                "rule_set": "OneDrive"
+              },
+              {
+                "rule_set": "ChinaDomain"
+              },
+              {
+                "rule_set": "ChinaIP"
+              }
+            ]
+          },
+          {
+            "rule_set": "ChinaIP"
+          },
+          {
+            "rule_set": ["private_domain", "private_ip"]
+          }
+        ],
+        "outbound": "DIRECT"
+      },
+      {
+        "clash_mode": "GLOBAL",
+        "outbound": "PROXY"
+      }
+    ],
+    "rule_set": [
+      {
+        "type": "remote",
+        "tag": "Ads",
+        "url": "https://ghfast.top/raw.githubusercontent.com/217heidai/adblockfilters/main/rules/adblocksingbox.srs",
+        "download_detour": "DIRECT",
+        "update_interval": "24h0m0s"
+      },
+      {
+        "type": "remote",
+        "tag": "Emby",
+        "url": "https://gh.568641.xyz/raw.githubusercontent.com/L-strawberry/ACL4SSR_Copy/main/singbox/rules/Emby.srs",
+        "download_detour": "DIRECT",
+        "update_interval": "24h0m0s"
+      },
+      {
+        "type": "remote",
+        "tag": "private_ip",
+        "url": "https://jsd.onmicrosoft.cn/gh/DustinWin/ruleset_geodata@sing-box-ruleset/privateip.srs",
+        "download_detour": "DIRECT",
+        "update_interval": "24h0m0s"
+      },
+      {
+        "type": "remote",
+        "tag": "private_domain",
+        "url": "https://jsd.onmicrosoft.cn/gh/DustinWin/ruleset_geodata@sing-box-ruleset/private.srs",
+        "download_detour": "DIRECT",
+        "update_interval": "24h0m0s"
+      },
+      {
+        "type": "remote",
+        "tag": "Telegram",
+        "url": "https://ghfast.top/raw.githubusercontent.com/Repcz/Tool/X/sing-box/Rules/Telegram.srs",
+        "download_detour": "DIRECT",
+        "update_interval": "24h0m0s"
+      },
+      {
+        "type": "remote",
+        "tag": "YouTube",
+        "url": "https://ghfast.top/raw.githubusercontent.com/Repcz/Tool/X/sing-box/Rules/YouTube.srs",
+        "download_detour": "DIRECT",
+        "update_interval": "24h0m0s"
+      },
+      {
+        "type": "remote",
+        "tag": "Google",
+        "url": "https://ghfast.top/raw.githubusercontent.com/Repcz/Tool/X/sing-box/Rules/Google.srs",
+        "download_detour": "DIRECT",
+        "update_interval": "24h0m0s"
+      },
+      {
+        "type": "remote",
+        "tag": "google-play",
+        "url": "https://ghfast.top/raw.githubusercontent.com/MetaCubeX/meta-rules-dat/sing/geo/geosite/google-play.srs",
+        "download_detour": "DIRECT",
+        "update_interval": "24h0m0s"
+      },
+      {
+        "type": "remote",
+        "tag": "google-play@cn",
+        "url": "https://ghfast.top/raw.githubusercontent.com/MetaCubeX/meta-rules-dat/sing/geo/geosite/google-play@cn.srs",
+        "download_detour": "DIRECT",
+        "update_interval": "24h0m0s"
+      },
+      {
+        "type": "remote",
+        "tag": "Microsoft",
+        "url": "https://ghfast.top/raw.githubusercontent.com/Repcz/Tool/X/sing-box/Rules/Microsoft.srs",
+        "download_detour": "DIRECT",
+        "update_interval": "24h0m0s"
+      },
+      {
+        "type": "remote",
+        "tag": "OneDrive",
+        "url": "https://ghfast.top/raw.githubusercontent.com/Repcz/Tool/X/sing-box/Rules/OneDrive.srs",
+        "download_detour": "DIRECT",
+        "update_interval": "24h0m0s"
+      },
+      {
+        "type": "remote",
+        "tag": "Github",
+        "url": "https://ghfast.top/raw.githubusercontent.com/Repcz/Tool/X/sing-box/Rules/Github.srs",
+        "download_detour": "DIRECT",
+        "update_interval": "24h0m0s"
+      },
+      {
+        "type": "remote",
+        "tag": "Twitter",
+        "url": "https://ghfast.top/raw.githubusercontent.com/Repcz/Tool/X/sing-box/Rules/Twitter.srs",
+        "download_detour": "DIRECT",
+        "update_interval": "24h0m0s"
+      },
+      {
+        "type": "remote",
+        "tag": "AppleProxy",
+        "url": "https://ghfast.top/raw.githubusercontent.com/Repcz/Tool/X/sing-box/Rules/AppleProxy.srs",
+        "download_detour": "DIRECT",
+        "update_interval": "24h0m0s"
+      },
+      {
+        "type": "remote",
+        "tag": "AI",
+        "url": "https://ghfast.top/raw.githubusercontent.com/Repcz/Tool/X/sing-box/Rules/AI.srs",
+        "download_detour": "DIRECT",
+        "update_interval": "24h0m0s"
+      },
+      {
+        "type": "remote",
+        "tag": "Spotify",
+        "url": "https://ghfast.top/raw.githubusercontent.com/Repcz/Tool/X/sing-box/Rules/Spotify.srs",
+        "download_detour": "DIRECT",
+        "update_interval": "24h0m0s"
+      },
+      {
+        "type": "remote",
+        "tag": "Bahamut",
+        "url": "https://ghfast.top/raw.githubusercontent.com/Repcz/Tool/X/sing-box/Rules/Bahamut.srs",
+        "download_detour": "DIRECT",
+        "update_interval": "24h0m0s"
+      },
+      {
+        "type": "remote",
+        "tag": "Netflix",
+        "url": "https://ghfast.top/raw.githubusercontent.com/Repcz/Tool/X/sing-box/Rules/Netflix.srs",
+        "download_detour": "DIRECT",
+        "update_interval": "24h0m0s"
+      },
+      {
+        "type": "remote",
+        "tag": "Disney",
+        "url": "https://ghfast.top/raw.githubusercontent.com/Repcz/Tool/X/sing-box/Rules/Disney.srs",
+        "download_detour": "DIRECT",
+        "update_interval": "24h0m0s"
+      },
+      {
+        "type": "remote",
+        "tag": "PrimeVideo",
+        "url": "https://ghfast.top/raw.githubusercontent.com/Repcz/Tool/X/sing-box/Rules/PrimeVideo.srs",
+        "download_detour": "DIRECT",
+        "update_interval": "24h0m0s"
+      },
+      {
+        "type": "remote",
+        "tag": "HBO",
+        "url": "https://ghfast.top/raw.githubusercontent.com/Repcz/Tool/X/sing-box/Rules/HBO.srs",
+        "download_detour": "DIRECT",
+        "update_interval": "24h0m0s"
+      },
+      {
+        "type": "remote",
+        "tag": "TikTok",
+        "url": "https://ghfast.top/raw.githubusercontent.com/Repcz/Tool/X/sing-box/Rules/TikTok.srs",
+        "download_detour": "DIRECT",
+        "update_interval": "24h0m0s"
+      },
+      {
+        "type": "remote",
+        "tag": "ChinaDomain",
+        "url": "https://ghfast.top/raw.githubusercontent.com/MetaCubeX/meta-rules-dat/sing/geo/geosite/cn.srs",
+        "download_detour": "DIRECT",
+        "update_interval": "24h0m0s"
+      },
+      {
+        "type": "remote",
+        "tag": "ChinaIP",
+        "url": "https://ghfast.top/raw.githubusercontent.com/MetaCubeX/meta-rules-dat/sing/geo/geoip/cn.srs",
+        "download_detour": "DIRECT",
+        "update_interval": "24h0m0s"
+      }
+    ],
+    "final": "PROXY",
+    "auto_detect_interface": true,
+    "default_domain_resolver": {
+      "server": "direct_dns",
+      "strategy": "ipv4_only"
+    }
+  },
+  "experimental": {
+    "cache_file": {
+      "enabled": true,
+      "store_fakeip": true,
+      "store_rdrc": true,
+      "rdrc_timeout": "24h0m0s"
+    },
+    "urltest_unified_delay": true,
+    "clash_api": {
+      "external_controller": "127.0.0.1:9090",
+      "external_ui": "ui",
+      "external_ui_download_url": "https://ghfast.top/github.com/Zephyruso/zashboard/archive/refs/heads/gh-pages.zip",
+      "external_ui_download_detour": "DIRECT",
+      "secret": "we123456",
+      "default_mode": "RULE",
+      "access_control_allow_private_network": true
+    }
+  }
+}        
         };
 
         // 默认 ruleString 变量
