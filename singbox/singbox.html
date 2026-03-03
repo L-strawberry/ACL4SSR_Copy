@@ -317,7 +317,7 @@
     <div class="header">
         <div class="logo">
             <div class="logo-icon"><i class="fas fa-exchange-alt"></i></div>
-            <div class="logo-text">sing-box 配置</div>
+            <div class="logo-text">sing-box</div>
         </div>
     </div>
 
@@ -496,6 +496,13 @@
         "rewrite_ttl": 0
       },
       {
+        "rule_set": [
+          "ChinaDomain",
+          "ChinaIP"
+        ],
+        "server": "direct_dns"
+      },
+      {
         "domain_suffix": [
           ".arpa"
         ],
@@ -510,7 +517,7 @@
     {
       "type": "tun",
       "tag": "tun-in",
-      "interface_name": "singbox——reF1nd",
+      "interface_name": "singbox",
       "mtu": 9000,
       "address": ["172.18.0.1/30"],
       "auto_route": true,
@@ -974,6 +981,13 @@
         "rewrite_ttl": 0
       },
       {
+        "rule_set": [
+          "ChinaDomain",
+          "ChinaIP"
+        ],
+        "server": "direct_dns"
+      },
+      {
         "domain_suffix": [
           ".arpa"
         ],
@@ -988,7 +1002,7 @@
     {
       "type": "tun",
       "tag": "tun-in",
-      "interface_name": "singbox——reF1nd",
+      "interface_name": "singbox-reF1nd",
       "mtu": 9000,
       "address": ["172.18.0.1/30"],
       "auto_route": true,
