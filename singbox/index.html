@@ -274,120 +274,68 @@
         /* ====================
            移动端专属样式
            ==================== */
-        @media (max-width: 1024px) {
-            body {
-                height: auto; /* 允许页面整体滚动 */
-                min-height: 100vh;
-                overflow-y: auto; /* 恢复body滚动 */
-            }
-
-            /* 移动端头部 */
-            .header {
-                height: auto;
-                flex-direction: column;
-                padding: 1.5rem 1rem;
-                gap: 1.2rem;
-                position: sticky; /* 头部吸顶 */
-                top: 0;
-                background: rgba(26, 26, 46, 0.95);
-            }
-
-            .logo {
-                width: 100%;
-                justify-content: center;
-            }
-
-            .version-badge { display: none; /* 移动端隐藏版本号节省空间 */ }
-
-            .controls {
-                width: 100%;
-                display: grid;
-                grid-template-columns: 1fr 1.5fr 1fr; /* 中间转换按钮大一点 */
-                gap: 0.8rem;
-            }
-
-            .btn {
-                justify-content: center;
-                padding: 0.8rem 0;
-                font-size: 0.85rem;
-                flex-direction: column; /* 图标文字上下排列 */
-                gap: 0.3rem;
-            }
-            
-            .btn i { font-size: 1.1rem; }
-
-            /* 移动端主区域 */
-            .main {
-                flex-direction: column;
-                padding: 1rem;
-                gap: 1.5rem;
-                overflow: visible; /* 让卡片自然撑开 */
-            }
-
-            .card {
-                height: auto; /* 高度自适应 */
-                min-height: 400px; /* 保证最小高度 */
-                border-radius: 12px;
-            }
-
-            .card-header {
-                padding: 0.8rem 1rem;
-                background: rgba(255, 255, 255, 0.03);
-            }
-
-            .card-title { font-size: 0.9rem; }
-            .card-icon { display: none; /* 移动端隐藏卡片图标 */ }
-
-            .editor {
-                font-size: 14px; /* 移动端字体调整 */
-                padding: 1rem;
-                min-height: 350px; /* 移动端输入框最小高度 */
-            }
-
-            /* 移动端底部 */
-            .footer {
-                height: auto;
-                padding: 1rem;
-                flex-direction: column;
-                gap: 0.8rem;
-                text-align: center;
-                margin-bottom: 1rem;
-            }
-
-            .stats {
-                gap: 1rem;
-                justify-content: center;
-                flex-wrap: wrap;
-            }
-            
-            .hint { display: none; /* 移动端隐藏提示信息 */ }
+    @media (max-width: 1024px) {
+        /* 1. 实现您要求的标题间距：在第一行配置项上方留出空隙 */
+        .config-row {
+            margin-top: 25px !important; /* 与 sing-box 标题留出约两个空格的距离 */
         }
-    </style>
+
+        /* 2. 缩小输入框内边距，防止并排时太拥挤 */
+        #ruleInput, #templateSelect {
+            padding: 8px 5px !important;
+            font-size: 12px !important;
+        }
+
+        /* 3. 底部提示单行显示优化 */
+        .footer {
+            flex-direction: column;
+            padding: 8px;
+            gap: 4px;
+        }
+
+        .hint {
+            display: block !important;
+            white-space: nowrap;      /* 强制单行 */
+            font-size: 11px;
+            width: 100%;
+            text-align: center;
+            overflow-x: auto;
+            opacity: 0.8;
+        }
+
+        .stats {
+            width: 100%;
+            justify-content: center;
+            font-size: 11px;
+            gap: 10px;
+        }
+    }
+      </style>
 </head>
 <body>
 
     <div class="header">
         <div class="logo">
-            <div class="logo-icon">
-                <i class="fas fa-exchange-alt"></i>
-            </div>
-            <div class="logo-text">sing-box 配置生成</div>
-            <div class="version-badge">V1.13.0+</div>
+            <div class="logo-icon"><i class="fas fa-exchange-alt"></i></div>
+            <div class="logo-text">sing-box 配置</div>
+        </div>
+    </div>
+
+    <div class="config-row" style="display: flex; gap: 10px; margin-bottom: 15px; margin-top: 20px;">
+        <div class="input-group" style="flex: 1;">
+            <label style="color: var(--text-secondary); font-size: 13px; white-space: nowrap;">节点规则</label>
+            <input type="text" id="ruleInput" placeholder="默认: 🕳ℹ️PROXY...🏷..." 
+                  style="width: 100%; background: var(--card-bg); border: 1px solid var(--card-border); color: white; padding: 8px; border-radius: 8px; margin-top: 5px; font-size: 13px;">
         </div>
 
-        <div class="input-group" style="margin-bottom: 15px;">
-            <label style="color: var(--text-secondary); font-size: 14px;">节点规则</label>
-            <input type="text" id="ruleInput" placeholder="留空使用默认: 🕳ℹ️PROXY...🏷..." 
-                  style="width: 100%; background: var(--card-bg); border: 1px solid var(--card-border); color: white; padding: 10px; border-radius: 8px; margin-top: 5px;">
-        </div>
-
-        <div class="input-group" style="margin-bottom: 15px;">
-            <label style="color: var(--text-secondary); font-size: 14px;">配置模板</label>
-            <select id="templateSelect" style="width: 100%; background: var(--card-bg); border: 1px solid var(--card-border); color: white; padding: 10px; border-radius: 8px; margin-top: 5px;">
+        <div class="input-group" style="flex: 1;">
+            <label style="color: var(--text-secondary); font-size: 13px; white-space: nowrap;">配置模板</label>
+            <select id="templateSelect" style="width: 100%; background: var(--card-bg); border: 1px solid var(--card-border); color: white; padding: 8px; border-radius: 8px; margin-top: 5px; font-size: 13px;">
                 <option value="default">sing-box</option>
                 <option value="reF1nd">sing-box_reF1nd</option>
             </select>
-        </div>        
+        </div>
+    </div>
         
         <div class="controls">
             <button class="btn btn-secondary" onclick="clearInput()">
@@ -416,7 +364,7 @@
                     <div class="status-dot"></div>
                     <span>等待输入</span>
                 </div>
-                <textarea id="inputArea" class="editor" placeholder="在此粘贴您的配置...&#10;支持格式：&#10;• VLESS/VMess/Trojan/SS 链接&#10;• Clash 订阅内容&#10;• 混合节点列表"></textarea>
+                <textarea id="inputArea" class="editor" placeholder="粘贴节点内容...&#10;&#10;支持格式：&#10;• VLESS/VMess/Trojan/SS 链接&#10;• Clash 订阅内容&#10;• 混合节点列表"></textarea>
             </div>
         </div>
 
@@ -433,7 +381,7 @@
                     <div class="status-dot"></div>
                     <span>等待结果</span>
                 </div>
-                <textarea id="outputArea" class="editor" readonly placeholder="转换后的配置将显示在这里..."></textarea>
+                <textarea id="outputArea" class="editor" readonly placeholder="转换后的配置..."></textarea>
             </div>
         </div>
     </div>
@@ -445,16 +393,12 @@
                 <span>节点: <span id="nodeCount" class="stat-value">0</span></span>
             </div>
             <div class="stat-item">
-                <i class="fas fa-code-branch"></i>
-                <span>Core: <span class="stat-value">1.13.0 +</span></span>
-            </div>
-            <div class="stat-item">
                 <i class="fas fa-clock"></i>
                 <span>状态: <span id="statusText" class="stat-value">就绪</span></span>
             </div>
         </div>
         <div class="hint">
-            <i class="fas fa-lightbulb"></i> 提示: 转换完全在本地进行，不会上传您的配置
+            <i class="fas fa-shield-alt"></i> 本地转换 · 保护隐私 · 核心 V1.13.0+
         </div>
     </div>
 
@@ -1692,32 +1636,41 @@
                     }
 
                 } else if (protocol === 'vmess') {
-                    if (!uriObj.username && urlStr.includes('vmess://')) {
-                         const b64 = urlStr.replace('vmess://', '');
-                         try {
-                            const v = JSON.parse(safeBase64Decode(b64));
-                            return mapClashToSingbox({
-                                type: 'vmess', name: v.ps, server: v.add, port: v.port, uuid: v.id, alterId: v.aid,
-                                cipher: v.scy || 'auto', network: v.net, tls: v.tls==='tls',
-                                servername: v.sni || v.host, "ws-opts": {path: v.path, headers: {Host:v.host}},
-                                "grpc-opts": {"grpc-service-name": v.path}
-                            });
-                         } catch(e) {}
+                    // 检查是否是 Base64 编码的 vmess 链接
+                    const b64Data = urlStr.replace('vmess://', '').split('#')[0];
+                    try {
+                        const v = JSON.parse(safeBase64Decode(b64Data));
+                        node.type = 'vmess';
+                        node.server = v.add;
+                        node.server_port = parseInt(v.port);
+                        node.uuid = v.id;
+                        node.security = v.scy || 'auto';
+                        node.alter_id = v.aid ? parseInt(v.aid) : 0;
+                        node.tag = v.ps || node.tag;
+                        
+                        if (v.net === 'ws') {
+                            node.transport = {
+                                type: 'ws',
+                                path: v.path || '/',
+                                headers: v.host ? { Host: v.host } : {}
+                            };
+                        }
+                        if (v.tls === 'tls') {
+                            node.tls = { enabled: true, server_name: v.sni || v.host || v.add };
+                        }
+                    } catch (e) {
+                        console.error("Vmess Base64 解析失败", e);
+                        return null;
                     }
-                    
-                    node.type = 'vmess';
-                    node.uuid = uriObj.username;
-                    node.alter_id = 0;
-                    node.security = 'auto';
-
-                    const type = params.obfs || params.type || 'tcp';
-                    if (type === 'websocket' || type === 'ws') {
-                        applyWs(node, params.path, params.obfsParam ? {Host: params.obfsParam} : {});
-                    }
-                    if (params.tls === '1') {
-                        node.tls = { enabled: true, server_name: params.peer || params.obfsParam };
-                    }
-
+                  
+                } else if (protocol === 'hysteria2') {
+                    node.type = 'hysteria2';
+                    node.password = uriObj.username; // 提取 e3a5bb40...
+                    node.tls = {
+                        enabled: true,
+                        server_name: params.sni || node.server,
+                        insecure: params.insecure === '1'
+                    };
                 } else if (protocol === 'trojan') {
                     node.type = 'trojan';
                     node.password = uriObj.username;
@@ -1795,12 +1748,12 @@
         function parseNodes(input) {
             let rawContent = input.trim();
             
-            // 自动识别并解码 Base64
+            // 1. 如果整个输入是 Base64 订阅内容，先整体解码
             if (!rawContent.includes('://') && rawContent.length > 30) {
                 try {
-                    rawContent = atob(rawContent);
+                    rawContent = safeBase64Decode(rawContent);
                 } catch (e) {
-                    console.error('Base64 解码失败，尝试直接解析');
+                    console.error('Base64 订阅内容解码失败');
                 }
             }
 
@@ -1812,32 +1765,31 @@
                 if (!line) return;
 
                 try {
-                    // 支持多种协议前缀
-                    if (line.startsWith('vmess://') || line.startsWith('vless://') || 
-                        line.startsWith('trojan://') || line.startsWith('ss://')) {
-                        
-                        // 提取 tag 的通用方法
-                        let tag = "未命名节点";
-                        if (line.includes('#')) {
-                            tag = decodeURIComponent(line.split('#')[1]);
-                        } else if (line.startsWith('vmess://')) {
-                            const vmessData = JSON.parse(atob(line.replace('vmess://', '')));
-                            tag = vmessData.ps || tag;
+                    // 2. 核心：调用你已经定义的 parseURI 函数进行深度解析
+                    // 这样可以同时支持 vmess/vless/ss/trojan/hysteria2
+                    const node = parseURI(line);
+                    
+                    if (node && node.server) {
+                        nodes.push(node);
+                    } else {
+                        // 兜底逻辑：如果 parseURI 没识别出协议，尝试简单正则提取
+                        const protoMatch = line.match(/^([a-z0-9]+):\/\//i);
+                        if (protoMatch) {
+                            const protocol = protoMatch[1].toLowerCase();
+                            let tag = "未命名节点";
+                            if (line.includes('#')) {
+                                tag = decodeURIComponent(line.split('#')[1]);
+                            }
+                            // 即使解析不全，至少保证 tag 存在，防止 convert 函数报错
+                            nodes.push({ tag: tag, type: protocol, _raw: line });
                         }
-
-                        // 构造节点实体 (这里根据实际 sing-box 格式需求调整)
-                        nodes.push({
-                            tag: tag,
-                            type: line.split('://')[0],
-                            _raw: line // 保留原始数据供后续转换器使用
-                        });
                     }
                 } catch (e) {
-                    console.warn('忽略无法解析的行:', line);
+                    console.warn('忽略无法解析的行:', line, e);
                 }
             });
             
-            // 去重
+            // 3. 节点名去重
             return Array.from(new Map(nodes.map(node => [node.tag, node])).values());
         }
 
