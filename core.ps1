@@ -1,0 +1,301 @@
+﻿<### core 管理工具
+1.把相关 内核 及 配置文件 放在目录如 D:\app ，并确保将目录添加到系统 PATH 中；
+2.将此脚本保存为 core.ps1；
+3.终端执行命令： notepad $PROFILE  打开 PowerShell 配置文件，添加以下行以启用 core 快捷命令：
+    
+    function core { & "D:\app\mihomo\core.ps1" $args }
+
+保存后，重启 PowerShell 以加载配置。然后你就可以在命令行使用 core 命令来管理你的内核了！
+
+## 注意‼️‼️‼️：请根据实际情况修改 core.ps1 所在目录。
+##>
+
+param(
+    [string]$cmd,
+    [string]$arg
+)
+
+# 根目录 (已修正空格)
+$root = "D:\app"
+$coreFile = "$root\.core"
+
+# 默认内核初始化 (使用兼容的读取方式)
+if (!(Test-Path $coreFile)) {
+    "mihomo" | Out-File $coreFile -Encoding ascii
+}
+
+# 兼容 PowerShell 5.1 的读取方式
+$currentCore = (Get-Content $coreFile | Out-String).Trim()
+
+# ------------------------
+# 核心识别函数
+# ------------------------
+
+function Get-FolderStatus {
+    param($dirName)
+    $dirPath = Join-Path $root $dirName
+    if (!(Test-Path $dirPath)) { return $null }
+
+    # 1. 寻找内核 (mihomo*.exe 或 sing-box*.exe)
+    $exe = Get-ChildItem $dirPath -Filter "*.exe" | Where-Object { 
+        $_.Name -match "^mihomo.*\.exe$" -or $_.Name -match "^sing-box.*\.exe$" 
+    } | Sort-Object LastWriteTime -Descending | Select-Object -First 1
+    
+    # 2. 寻找配置文件 (找最大的 .yaml 或 .json)
+    $cfg = Get-ChildItem $dirPath | Where-Object { 
+        $_.Extension -match "\.(yaml|yml|json)$" 
+    } | Sort-Object Length -Descending | Select-Object -First 1
+    
+    return @{
+        name     = $dirName
+        workdir  = $dirPath
+        exe      = $exe
+        config   = $cfg
+        isValid  = ($exe -ne $null -and $cfg -ne $null)
+        type     = if ($cfg -and $cfg.Extension -match "yaml|yml") { "mihomo" } else { "sing-box" }
+    }
+}
+
+# ------------------------
+# 加载当前环境变量
+# ------------------------
+
+$currentInfo = Get-FolderStatus $currentCore
+if ($currentInfo -and $currentInfo.isValid) {
+    $workdir     = $currentInfo.workdir
+    $exePath     = $currentInfo.exe.FullName
+    $processName = $currentInfo.exe.BaseName
+    $config      = $currentInfo.config.FullName
+    $type        = $currentInfo.type
+} else {
+    $processName = ""
+    $type = "未知"
+}
+
+# ------------------------
+# 工具函数
+# ------------------------
+
+function Get-ControllerPort {
+    if (!$config -or !(Test-Path $config)) { return 9090 }
+    $content = Get-Content $config | Out-String
+    if ($content -match "external-controller\s*:\s*['""]?([0-9\.]+):(\d+)['""]?") { return $matches[2] }
+    if ($content -match """external_controller""\s*:\s*""([0-9\.]+):(\d+)""") { return $matches[2] }
+    return 9090
+}
+
+function Get-UIPath {
+    if (!$config -or !(Test-Path $config)) { return "ui" }
+    $content = Get-Content $config | Out-String
+    if ($content -match "external[-_]ui\s*[:]\s*['""]?([^'""\s,]+)['""]?") { return $matches[1].Trim() }
+    return "ui"
+}
+
+# ------------------------
+# 核心控制命令
+# ------------------------
+
+function Start-Core {
+    if (!$currentInfo -or !$currentInfo.isValid) {
+        Write-Host "错误: $currentCore 目录配置不完整，无法启动。" -ForegroundColor Red
+        return
+    }
+    if (Get-Process -Name $processName -ErrorAction SilentlyContinue) {
+        Write-Host "[$currentCore] 已在运行" -ForegroundColor Yellow
+        return
+    }
+    
+    $runArgs = if ($type -eq "mihomo") { "-f `"$config`"" } else { "run -c `"$config`"" }
+    Start-Process $exePath -ArgumentList $runArgs -WorkingDirectory $workdir -WindowStyle Hidden
+    Write-Host "[$currentCore] 已启动" -ForegroundColor Green
+}
+
+function Stop-Core {
+    if (!$processName) { return }
+    $p = Get-Process -Name $processName -ErrorAction SilentlyContinue
+    if (!$p) {
+        Write-Host "[$currentCore] 未运行" -ForegroundColor Red
+        return
+    }
+    $p | Stop-Process -Force
+    Write-Host "[$currentCore] 已停止" -ForegroundColor Green
+}
+
+function Restart-Core {
+    Stop-Core
+    Start-Sleep 1
+    Start-Core
+}
+
+function Status-Core {
+    Write-Host ""
+    Write-Host " Core 状态" -ForegroundColor Cyan
+    Write-Host "----------------------------------------"
+    Write-Host " 当前内核: $currentCore" -ForegroundColor Green
+    $p = Get-Process -Name $processName -ErrorAction SilentlyContinue
+    if (!$p) {
+        Write-Host " 状态: Stopped" -ForegroundColor Red
+    } else {
+        Write-Host " 状态: Running" -ForegroundColor Green
+        Write-Host " PID : $($p.Id)"
+        Write-Host " 内存: $("{0:N2}" -f ($p.WorkingSet64 / 1MB)) MB"
+        if ($config) { Write-Host " 配置文件: $(Split-Path $config -Leaf)" }
+    }
+    Write-Host " 控制端口: $(Get-ControllerPort)"
+    Write-Host "----------------------------------------"
+        Write-Host ""
+        return
+}
+
+function Watch-Core {
+    if (!$processName) { 
+        Write-Host " 错误: 当前未选定内核或内核未运行" -ForegroundColor Red
+        return 
+    }
+
+    # 1. 预留 8 行空间并锁定起始位置，防止触底位移
+    Write-Host "`n`n`n`n`n`n`n`n"
+    $originY = [Console]::CursorTop - 8
+    
+    # 2. 隐藏光标以减少微小闪烁
+    $oldCursorSize = $Host.UI.RawUI.CursorSize
+    try { $Host.UI.RawUI.CursorSize = 0 } catch {}
+
+    try {
+        while ($true) {
+            # 3. 每一帧都回到锁定的原点
+            [Console]::SetCursorPosition(0, $originY)
+
+            # 4. 关键：所有输出必须 PadRight(60) 补齐，确保完全覆盖上一帧
+            Write-Host " Core 实时状态 (按 Ctrl + C 退出)".PadRight(60) -ForegroundColor Cyan
+            Write-Host "------------------------------------------------".PadRight(60)
+
+            $p = Get-Process -Name $processName -ErrorAction SilentlyContinue
+            if (!$p) {
+                Write-Host " 当前内核: $processName.exe".PadRight(60) -ForegroundColor Gray
+                Write-Host " 运行状态: Stopped".PadRight(60) -ForegroundColor Red
+                Write-Host "".PadRight(60)
+                Write-Host "".PadRight(60)
+                Write-Host "".PadRight(60)
+            } else {
+                Write-Host " 当前内核: $processName.exe".PadRight(60) -ForegroundColor Green
+                Write-Host " 运行状态: Running (PID: $($p.Id))".PadRight(60) -ForegroundColor Green
+                
+                $cpu = "{0:N2}" -f $p.CPU
+                $mem = "{0:N2}" -f ($p.WorkingSet64 / 1MB)
+                Write-Host " 资源占用: CPU: $cpu s | MEM: $mem MB".PadRight(60)
+                Write-Host " 控制端口: $(Get-ControllerPort)".PadRight(60)
+                Write-Host "".PadRight(60)
+            }
+            Write-Host "------------------------------------------------".PadRight(60)
+            
+            Start-Sleep -Milliseconds 800
+        }
+    }
+    catch {
+        # 用户按 Ctrl+C 退出
+    }
+    finally {
+        try { $Host.UI.RawUI.CursorSize = $oldCursorSize } catch {}
+        [Console]::SetCursorPosition(0, $originY + 8)
+        Write-Host "`n 监控已结束。" -ForegroundColor Yellow
+    }
+}
+
+function Open-UI {
+    $port = Get-ControllerPort
+    $ui = Get-UIPath
+    $url = "http://127.0.0.1:$port/$ui"
+    Write-Host "[$currentCore] 打开 UI: $url" -ForegroundColor Cyan
+    try { 
+        Invoke-WebRequest -Uri "http://127.0.0.1:$port" -TimeoutSec 1 -UseBasicParsing | Out-Null 
+    } catch { 
+        Start-Core; Start-Sleep 1 
+    }
+    Start-Process $url
+}
+
+function Show-Help {
+    Write-Host ""
+    Write-Host " Core 管理工具" -ForegroundColor Cyan
+    Write-Host "----------------------------------------"
+    Write-Host " 当前内核: $currentCore" -ForegroundColor Green
+    Write-Host ""
+    Write-Host " 可切换内核:"
+    
+    if (Test-Path $root) {
+        Get-ChildItem $root | Where-Object { $_.PSIsContainer } | ForEach-Object {
+            $status = Get-FolderStatus $_.Name
+            if ($status.exe) {
+                $prefix = if ($_.Name -eq $currentCore) { "   * " } else { "     " }
+                $color = if ($_.Name -eq $currentCore) { "Green" } else { "White" }
+                
+                if ($status.isValid) {
+                    Write-Host "$prefix$($_.Name)" -ForegroundColor $color
+                } else {
+                    Write-Host "$prefix$($_.Name) (缺少配置文件)" -ForegroundColor Gray
+                }
+            }
+        }
+    } else {
+        Write-Host "     错误: 找不到根目录 $root" -ForegroundColor Red
+    }
+    
+    Write-Host ""
+    Write-Host " core 子命令:"
+    Write-Host "   [name]     - 切换启动内核"
+    Write-Host "   start      - 启动当前内核"
+    Write-Host "   stop       - 停止当前内核"
+    Write-Host "   restart    - 重启当前内核"
+    Write-Host "   status     - 查看当前状态"
+    Write-Host "   watch      - 实时监控面板"
+    Write-Host "   ui         - 打开控制面板"
+    Write-Host "----------------------------------------"
+    Write-Host ""
+}
+
+# ------------------------
+# 逻辑入口
+# ------------------------
+
+if ([string]::IsNullOrEmpty($cmd)) {
+    Show-Help
+} else {
+    $targetInfo = Get-FolderStatus $cmd
+    if ($targetInfo -and $targetInfo.exe) {
+        if (!$targetInfo.isValid) {
+            Write-Host "无法切换: $cmd 缺少 *.yaml/*.json 配置文件" -ForegroundColor Red
+            return
+        }
+        if ($cmd -eq $currentCore) {
+            Write-Host "当前已是 $cmd" -ForegroundColor Yellow
+        } else {
+            Stop-Core
+            $cmd | Out-File $coreFile -Encoding ascii
+            Write-Host "已切换 → $cmd" -ForegroundColor Green
+            powershell -ExecutionPolicy Bypass -File $PSCommandPath start
+            Write-Host "按 u 打开 WebUI (5秒内有效)..." -ForegroundColor Cyan
+            $startTime = Get-Date
+            while ((Get-Date) - $startTime -lt (New-TimeSpan -Seconds 5)) {
+                if ([Console]::KeyAvailable) {
+                    if ([Console]::ReadKey($true).KeyChar -eq 'u') { 
+                        # 重新加载环境以启用正确的 UI
+                        powershell -ExecutionPolicy Bypass -File $PSCommandPath ui
+                        break 
+                    }
+                }
+                Start-Sleep -Milliseconds 100
+            }
+        }
+    } else {
+        switch ($cmd) {
+            "start"   { Start-Core }
+            "stop"    { Stop-Core }
+            "restart" { Restart-Core }
+            "status"  { Status-Core }
+            "watch"   { Watch-Core }
+            "ui"      { Open-UI }
+            default   { Show-Help }
+        }
+    }
+}
