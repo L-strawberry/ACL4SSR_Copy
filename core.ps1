@@ -1,13 +1,25 @@
-﻿<### core 管理工具
-1.把相关 内核 及 配置文件 放在目录如 D:\app ，并确保将目录添加到系统 PATH 中；
-2.将此脚本保存为 core.ps1；
+<### core 管理工具
+1.把相关 内核 及 配置文件 放在统一子目录；
+2.将此脚本 core.ps1 放于根目录；
 3.终端执行命令： notepad $PROFILE  打开 PowerShell 配置文件，添加以下行以启用 core 快捷命令：
     
-    function core { & "D:\app\mihomo\core.ps1" $args }
+    function core { & "D:\app\core\core.ps1" @args }
 
-保存后，重启 PowerShell 以加载配置。然后你就可以在命令行使用 core 命令来管理你的内核了！
+保存后，重启 PowerShell 以加载配置。
 
-## 注意‼️‼️‼️：请根据实际情况修改 core.ps1 所在目录。
+建议目录结构：
+D:\app\core\
+        ├── core.ps1
+        |
+        ├── singbox\
+        |   ├── config.yaml
+        |   ├── mihomo.exe
+        |
+        └── mihomo\
+            ├── config.yaml
+            ├── mihomo.exe
+
+## 注意‼️‼️‼️：路径请按实际情况修改
 ##>
 
 param(
@@ -15,8 +27,8 @@ param(
     [string]$arg
 )
 
-# 根目录 (已修正空格)
-$root = "D:\app"
+# ‼️‼️‼️根目录 (自行修改实际内核文件夹路径)
+$root = "D:\app\core"
 $coreFile = "$root\.core"
 
 # 默认内核初始化 (使用兼容的读取方式)
