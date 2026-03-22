@@ -142,19 +142,22 @@ function Restart-Core {
 function Status-Core {
     Write-Host ""
     Write-Host " Core 状态" -ForegroundColor Cyan
-    Write-Host "----------------------------------------"
-    Write-Host " 当前内核: $currentCore" -ForegroundColor Green
+    Write-Host "----------------------------------------" -ForegroundColor DarkGray
+    Write-Host " 当前内核: " -NoNewline
+    Write-Host "$currentCore" -ForegroundColor Green
     $p = Get-Process -Name $processName -ErrorAction SilentlyContinue
     if (!$p) {
-        Write-Host " 状态: Stopped" -ForegroundColor Red
+        Write-Host " 运行状态: " -NoNewline
+        Write-Host "Stopped" -ForegroundColor Red
     } else {
-        Write-Host " 状态: Running" -ForegroundColor Green
+        Write-Host " 运行状态: " -NoNewline
+        Write-Host "Running" -ForegroundColor Green
         Write-Host " PID : $($p.Id)"
         Write-Host " 内存: $("{0:N2}" -f ($p.WorkingSet64 / 1MB)) MB"
         if ($config) { Write-Host " 配置文件: $(Split-Path $config -Leaf)" }
     }
     Write-Host " 控制端口: $(Get-ControllerPort)"
-    Write-Host "----------------------------------------"
+    Write-Host "----------------------------------------" -ForegroundColor DarkGray
         Write-Host ""
         return
 }
@@ -179,19 +182,25 @@ function Watch-Core {
             [Console]::SetCursorPosition(0, $originY)
 
             # 4. 关键：所有输出必须 PadRight(60) 补齐，确保完全覆盖上一帧
-            Write-Host " Core 实时状态 (按 Ctrl + C 退出)".PadRight(60) -ForegroundColor Cyan
-            Write-Host "------------------------------------------------".PadRight(60)
+            Write-Host " Core 实时状态 " -ForegroundColor Cyan -NoNewline
+            Write-Host "    (按 Ctrl + C 退出)".PadRight(60) -ForegroundColor Magenta
+            Write-Host "----------------------------------------".PadRight(60) -ForegroundColor DarkGray
 
             $p = Get-Process -Name $processName -ErrorAction SilentlyContinue
             if (!$p) {
-                Write-Host " 当前内核: $processName.exe".PadRight(60) -ForegroundColor Gray
-                Write-Host " 运行状态: Stopped".PadRight(60) -ForegroundColor Red
+                Write-Host " 当前内核: " -NoNewline
+                Write-Host "$processName.exe".PadRight(60) -ForegroundColor Gray
+                Write-Host " 运行状态: " -NoNewline
+                Write-Host "Stopped".PadRight(60) -ForegroundColor Red
+
                 Write-Host "".PadRight(60)
                 Write-Host "".PadRight(60)
                 Write-Host "".PadRight(60)
             } else {
-                Write-Host " 当前内核: $processName.exe".PadRight(60) -ForegroundColor Green
-                Write-Host " 运行状态: Running (PID: $($p.Id))".PadRight(60) -ForegroundColor Green
+                Write-Host " 当前内核: " -NoNewline
+                Write-Host "$processName.exe".PadRight(60) -ForegroundColor Green
+                Write-Host " 运行状态: " -NoNewline
+                Write-Host "Running (PID: $($p.Id))".PadRight(60) -ForegroundColor Green
                 
                 $cpu = "{0:N2}" -f $p.CPU
                 $mem = "{0:N2}" -f ($p.WorkingSet64 / 1MB)
@@ -199,7 +208,7 @@ function Watch-Core {
                 Write-Host " 控制端口: $(Get-ControllerPort)".PadRight(60)
                 Write-Host "".PadRight(60)
             }
-            Write-Host "------------------------------------------------".PadRight(60)
+            Write-Host "----------------------------------------".PadRight(60) -ForegroundColor DarkGray
             
             Start-Sleep -Milliseconds 800
         }
