@@ -7,18 +7,6 @@
 
 保存后，重启 PowerShell 以加载配置。
 
-建议目录结构：
-D:\app\core\
-        ├── core.ps1
-        |
-        ├── singbox\
-        |   ├── config.yaml
-        |   ├── mihomo.exe
-        |
-        └── mihomo\
-            ├── config.yaml
-            ├── mihomo.exe
-
 ## 注意‼️‼️‼️：路径请按实际情况修改
 ##>
 
@@ -27,7 +15,7 @@ param(
     [string]$arg
 )
 
-# ‼️‼️‼️根目录 (自行修改实际内核文件夹路径)
+# 根目录 (自行修改实际内核文件夹路径)
 $root = "D:\app\core"
 $coreFile = "$root\.core"
 
@@ -230,39 +218,69 @@ function Open-UI {
 function Show-Help {
     Write-Host ""
     Write-Host " Core 管理工具" -ForegroundColor Cyan
-    Write-Host "----------------------------------------"
-    Write-Host " 当前内核: $currentCore" -ForegroundColor Green
+    Write-Host "----------------------------------------" -ForegroundColor DarkGray
+
+    $p = Get-Process -Name $processName -ErrorAction SilentlyContinue
+
+    Write-Host " 当前内核: " -NoNewline
+
+    if (!$p) {
+        Write-Host "$currentCore 未运行（运行: core start）" -ForegroundColor Red
+    } else {
+        Write-Host "$currentCore (PID: $($p.Id)) is Running" -ForegroundColor Green
+    }
+
     Write-Host ""
-    Write-Host " 可切换内核:"
-    
+    Write-Host " 可切换内核:" 
+
     if (Test-Path $root) {
         Get-ChildItem $root | Where-Object { $_.PSIsContainer } | ForEach-Object {
             $status = Get-FolderStatus $_.Name
             if ($status.exe) {
-                $prefix = if ($_.Name -eq $currentCore) { "   * " } else { "     " }
-                $color = if ($_.Name -eq $currentCore) { "Green" } else { "White" }
-                
+
+                $isCurrent = $_.Name -eq $currentCore
+                $prefix = if ($isCurrent) { "   * " } else { "     " }
+
                 if ($status.isValid) {
-                    Write-Host "$prefix$($_.Name)" -ForegroundColor $color
+                    if ($isCurrent) {
+                        Write-Host "$prefix$($_.Name)" -ForegroundColor Green
+                    } else {
+                        Write-Host "$prefix$($_.Name)"
+                    }
                 } else {
-                    Write-Host "$prefix$($_.Name) (缺少配置文件)" -ForegroundColor Gray
+                    Write-Host "$prefix$($_.Name) (配置缺失)" -ForegroundColor DarkGray
                 }
             }
         }
     } else {
         Write-Host "     错误: 找不到根目录 $root" -ForegroundColor Red
     }
-    
+
     Write-Host ""
-    Write-Host " core 子命令:"
-    Write-Host "   [name]     - 切换启动内核"
-    Write-Host "   start      - 启动当前内核"
-    Write-Host "   stop       - 停止当前内核"
-    Write-Host "   restart    - 重启当前内核"
-    Write-Host "   status     - 查看当前状态"
-    Write-Host "   watch      - 实时监控面板"
-    Write-Host "   ui         - 打开控制面板"
-    Write-Host "----------------------------------------"
+    Write-Host " core 子命令:" -ForegroundColor Magenta
+
+    Write-Host "   [name]    " -NoNewline
+    Write-Host "—— 切换目标内核" -ForegroundColor DarkGray
+
+    Write-Host "   start     " -NoNewline
+    Write-Host "—— 启动当前内核" -ForegroundColor DarkGray
+
+    Write-Host "   stop      " -NoNewline
+    Write-Host "—— 停止当前内核" -ForegroundColor DarkGray
+
+    Write-Host "   restart   " -NoNewline
+    Write-Host "—— 重启当前内核" -ForegroundColor DarkGray
+
+    Write-Host "   status    " -NoNewline
+    Write-Host "—— 查看当前状态" -ForegroundColor DarkGray
+
+    Write-Host "   watch     " -NoNewline
+    Write-Host "—— 实时监控面板" -ForegroundColor DarkGray
+
+    Write-Host "   ui        " -NoNewline
+    Write-Host "—— 打开控制面板" -ForegroundColor DarkGray
+
+    Write-Host "----------------------------------------" -ForegroundColor DarkGray
     Write-Host ""
 }
 
