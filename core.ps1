@@ -7,6 +7,18 @@
 
 保存后，重启 PowerShell 以加载配置。
 
+建议目录结构：
+D:\app\core\
+        ├── core.ps1
+        |
+        ├── singbox\
+        |   ├── config.yaml
+        |   ├── mihomo.exe
+        |
+        └── mihomo\
+            ├── config.yaml
+            ├── mihomo.exe
+
 ## 注意‼️‼️‼️：路径请按实际情况修改
 ##>
 
