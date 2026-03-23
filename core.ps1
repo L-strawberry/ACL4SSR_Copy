@@ -104,10 +104,32 @@ function Get-UIPath {
 }
 
 # ------------------------
+# 权限检查工具函数
+# ------------------------
+function Test-Admin {
+    $currentPrincipal = New-Object Security.Principal.WindowsPrincipal([Security.Principal.WindowsIdentity]::GetCurrent())
+    return $currentPrincipal.IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)
+}
+
+function Assert-Admin {
+    if (-not (Test-Admin)) {
+        Write-Host "------------------------------------------------" -ForegroundColor Red
+        Write-Host " ⚠️ 权限不足：此操作需要【管理员权限】" -ForegroundColor Red
+        Write-Host " 请右键点击 PowerShell 选择 '以管理员身份运行'" -ForegroundColor Yellow
+        Write-Host " 或者组合键：win + R 按 A" -ForegroundColor Gray
+        Write-Host "------------------------------------------------" -ForegroundColor Red
+        return $false
+    }
+    return $true
+}
+
+# ------------------------
 # 核心控制命令
 # ------------------------
 
 function Start-Core {
+    if (-not (Assert-Admin)) { return } # 拦截非管理员请求
+
     if (!$currentInfo -or !$currentInfo.isValid) {
         Write-Host "错误: $currentCore 目录配置不完整，无法启动。" -ForegroundColor Red
         return
@@ -118,25 +140,51 @@ function Start-Core {
     }
     
     $runArgs = if ($type -eq "mihomo") { "-f `"$config`"" } else { "run -c `"$config`"" }
-    Start-Process $exePath -ArgumentList $runArgs -WorkingDirectory $workdir -WindowStyle Hidden
-    Write-Host "[$currentCore] 已启动" -ForegroundColor Green
+    
+    try {
+        Start-Process $exePath -ArgumentList $runArgs -WorkingDirectory $workdir -WindowStyle Hidden -ErrorAction Stop
+        Write-Host "[$currentCore] 已成功启动" -ForegroundColor Green
+    } catch {
+        Write-Host "启动失败: $($_.Exception.Message)" -ForegroundColor Red
+    }
 }
 
 function Stop-Core {
-    if (!$processName) { return }
+    if (-not (Assert-Admin)) { return $false } # 拦截非管理员请求
+
     $p = Get-Process -Name $processName -ErrorAction SilentlyContinue
-    if (!$p) {
-        Write-Host "[$currentCore] 未运行" -ForegroundColor Red
-        return
+    if (-not $p) {
+        Write-Host "[$currentCore] 未运行" -ForegroundColor Gray
+        return $true
     }
-    $p | Stop-Process -Force
-    Write-Host "[$currentCore] 已停止" -ForegroundColor Green
+
+    Write-Host "尝试停止 [$processName] (PID: $($p.Id))..." -ForegroundColor Cyan
+
+    try {
+        # 先尝试正常关闭
+        $p.CloseMainWindow() | Out-Null
+        $p | Wait-Process -Timeout 2 -ErrorAction SilentlyContinue
+
+        if (!$p.HasExited) {
+            # 再尝试强制关闭
+            Write-Host "正在强制结束进程..." -ForegroundColor DarkYellow
+            Stop-Process -Id $p.Id -Force -ErrorAction Stop
+        }
+        
+        Write-Host "✅ [$currentCore] 已停止" -ForegroundColor Green
+        return $true
+    }
+    catch {
+        Write-Host "❌ 停止失败：$($_.Exception.Message)" -ForegroundColor Red
+        return $false
+    }
 }
 
 function Restart-Core {
-    Stop-Core
-    Start-Sleep 1
-    Start-Core
+    if (Stop-Core) {
+        Start-Sleep -Milliseconds 500
+        Start-Core
+    }
 }
 
 function Status-Core {
@@ -313,32 +361,48 @@ if ([string]::IsNullOrEmpty($cmd)) {
     Show-Help
 } else {
     $targetInfo = Get-FolderStatus $cmd
+    # 1. 如果匹配到是内核名称，尝试执行“切换”逻辑
     if ($targetInfo -and $targetInfo.exe) {
+        
+        # --- 切换内核前须先通过权限检查 ---
+        if (-not (Assert-Admin)) {
+            Write-Host ""
+            return 
+        }
+
         if (!$targetInfo.isValid) {
             Write-Host "无法切换: $cmd 缺少 *.yaml/*.json 配置文件" -ForegroundColor Red
             return
         }
+
         if ($cmd -eq $currentCore) {
             Write-Host "当前已是 $cmd" -ForegroundColor Yellow
         } else {
-            Stop-Core
-            $cmd | Out-File $coreFile -Encoding ascii
-            Write-Host "已切换 → $cmd" -ForegroundColor Green
-            powershell -ExecutionPolicy Bypass -File $PSCommandPath start
-            Write-Host "按 u 打开 WebUI (5秒内有效)..." -ForegroundColor Cyan
-            $startTime = Get-Date
-            while ((Get-Date) - $startTime -lt (New-TimeSpan -Seconds 5)) {
-                if ([Console]::KeyAvailable) {
-                    if ([Console]::ReadKey($true).KeyChar -eq 'u') { 
-                        # 重新加载环境以启用正确的 UI
-                        powershell -ExecutionPolicy Bypass -File $PSCommandPath ui
-                        break 
+            if (Stop-Core) {
+                $cmd | Out-File $coreFile -Encoding ascii
+                Write-Host "已切换 → $cmd" -ForegroundColor Green
+                
+                # 启动内核
+                Start-Core 
+
+                Write-Host "按 u 打开 WebUI (5秒内有效)..." -ForegroundColor Cyan
+                $startTime = Get-Date
+                while ((Get-Date) - $startTime -lt (New-TimeSpan -Seconds 5)) {
+                    if ([Console]::KeyAvailable) {
+                        if ([Console]::ReadKey($true).KeyChar -eq 'u') { 
+                            Open-UI
+                            break 
+                        }
                     }
+                    Start-Sleep -Milliseconds 100
                 }
-                Start-Sleep -Milliseconds 100
+            } else {
+                Write-Host "由于无法停止旧进程，切换已中止。" -ForegroundColor Red
             }
         }
-    } else {
+    } 
+    # 2. 如果是普通子命令
+    else {
         switch ($cmd) {
             "start"   { Start-Core }
             "stop"    { Stop-Core }
