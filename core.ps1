@@ -275,13 +275,24 @@ function Open-UI {
     $port = Get-ControllerPort
     $ui = Get-UIPath
     $url = "http://127.0.0.1:$port/$ui"
-    Write-Host "[$currentCore] 打开 UI: $url" -ForegroundColor Cyan
-    try { 
-        Invoke-WebRequest -Uri "http://127.0.0.1:$port" -TimeoutSec 1 -UseBasicParsing | Out-Null 
-    } catch { 
-        Start-Core; Start-Sleep 1 
+    
+    # 检查进程是否存在
+    $p = Get-Process -Name $processName -ErrorAction SilentlyContinue
+    
+    if ($p) {
+        Write-Host "[$currentCore] 正在打开控制面板: $url" -ForegroundColor Cyan
+        Start-Process $url
+    } else {
+        Write-Host "[$currentCore] 内核未运行，尝试启动后打开..." -ForegroundColor Yellow
+        # 调用 Start-Core，如果权限不足，Start-Core 内部会拦截并报错
+        Start-Core
+        
+        # 如果启动成功（进程出现了），则等待并打开 UI
+        Start-Sleep -Seconds 1
+        if (Get-Process -Name $processName -ErrorAction SilentlyContinue) {
+            Start-Process $url
+        }
     }
-    Start-Process $url
 }
 
 function Show-Help {
