@@ -1,4 +1,4 @@
-<### core 管理工具
+﻿<### core 管理工具
 1.把相关 内核 及 配置文件 放在统一子目录；
 2.将此脚本 core.ps1 放于根目录；
 3.终端执行命令： notepad $PROFILE  打开 PowerShell 配置文件，添加以下行以启用 core 快捷命令：
@@ -167,20 +167,24 @@ function Restart-Core {
 function Status-Core {
     Write-Host ""
     Write-Host " Core 状态" -ForegroundColor Cyan
-    Write-Host "----------------------------------------"
-    Write-Host " 当前内核: $currentCore" -ForegroundColor Green
+    Write-Host "----------------------------------------" -ForegroundColor DarkGray
+    Write-Host " 当前内核: " -NoNewline
+    Write-Host "$currentCore" -ForegroundColor Green
     $p = Get-Process -Name $processName -ErrorAction SilentlyContinue
     if (!$p) {
-        Write-Host " 状态: Stopped" -ForegroundColor Red
+        Write-Host " 运行状态: " -NoNewline
+        Write-Host "Stopped" -ForegroundColor Red
     } else {
-        Write-Host " 状态: Running" -ForegroundColor Green
+        Write-Host " 运行状态: " -NoNewline
+        Write-Host "Running" -ForegroundColor Green
         Write-Host " PID : $($p.Id)"
         Write-Host " 内存: $("{0:N2}" -f ($p.WorkingSet64 / 1MB)) MB"
         if ($config) { Write-Host " 配置文件: $(Split-Path $config -Leaf)" }
     }
     Write-Host " 控制端口: $(Get-ControllerPort)"
-    Write-Host "----------------------------------------"
-    Write-Host ""
+    Write-Host "----------------------------------------" -ForegroundColor DarkGray
+        Write-Host ""
+        return
 }
 
 function Watch-Core {
@@ -196,8 +200,9 @@ function Watch-Core {
     try {
         while ($true) {
             [Console]::SetCursorPosition(0, $originY)
-            Write-Host " Core 实时状态 (按 Ctrl + C 退出)".PadRight(60) -ForegroundColor Cyan
-            Write-Host "------------------------------------------------".PadRight(60)
+            Write-Host " Core 实时状态 " -ForegroundColor Cyan -NoNewline
+            Write-Host "    (按 Ctrl + C 退出)".PadRight(60) -ForegroundColor Magenta
+            Write-Host "----------------------------------------".PadRight(60) -ForegroundColor DarkGray
             $p = Get-Process -Name $processName -ErrorAction SilentlyContinue
             if (!$p) {
                 Write-Host " 当前内核: $processName.exe".PadRight(60) -ForegroundColor Gray
@@ -212,7 +217,7 @@ function Watch-Core {
                 Write-Host " 控制端口: $(Get-ControllerPort)".PadRight(60)
                 Write-Host "".PadRight(60)
             }
-            Write-Host "------------------------------------------------".PadRight(60)
+            Write-Host "----------------------------------------".PadRight(60) -ForegroundColor DarkGray
             Start-Sleep -Milliseconds 800
         }
     }
@@ -235,34 +240,69 @@ function Open-UI {
 function Show-Help {
     Write-Host ""
     Write-Host " Core 管理工具" -ForegroundColor Cyan
-    Write-Host "----------------------------------------"
-    Write-Host " 当前内核: $currentCore" -ForegroundColor Green
+    Write-Host "----------------------------------------" -ForegroundColor DarkGray
+
+    $p = Get-Process -Name $processName -ErrorAction SilentlyContinue
+
+    Write-Host " 当前内核: " -NoNewline
+
+    if (!$p) {
+        Write-Host "$currentCore 未运行（运行: core start）" -ForegroundColor Red
+    } else {
+        Write-Host "$currentCore (PID: $($p.Id)) is Running" -ForegroundColor Green
+    }
+
     Write-Host ""
-    Write-Host " 可切换内核:"
+    Write-Host " 可切换内核:" 
+
     if (Test-Path $root) {
         Get-ChildItem $root | Where-Object { $_.PSIsContainer } | ForEach-Object {
             $status = Get-FolderStatus $_.Name
             if ($status.exe) {
-                $prefix = if ($_.Name -eq $currentCore) { "   * " } else { "     " }
-                $color = if ($_.Name -eq $currentCore) { "Green" } else { "White" }
+
+                $isCurrent = $_.Name -eq $currentCore
+                $prefix = if ($isCurrent) { "   * " } else { "     " }
+
                 if ($status.isValid) {
-                    Write-Host "$prefix$($_.Name)" -ForegroundColor $color
+                    if ($isCurrent) {
+                        Write-Host "$prefix$($_.Name)" -ForegroundColor Green
+                    } else {
+                        Write-Host "$prefix$($_.Name)"
+                    }
                 } else {
-                    Write-Host "$prefix$($_.Name) (缺少配置文件)" -ForegroundColor Gray
+                    Write-Host "$prefix$($_.Name) (配置缺失)" -ForegroundColor DarkGray
                 }
             }
         }
+    } else {
+        Write-Host "     错误: 找不到根目录 $root" -ForegroundColor Red
     }
+
     Write-Host ""
-    Write-Host " core 子命令:"
-    Write-Host "   [name]     - 切换启动内核"
-    Write-Host "   start      - 启动当前内核"
-    Write-Host "   stop       - 停止当前内核"
-    Write-Host "   restart    - 重启当前内核"
-    Write-Host "   status     - 查看当前状态"
-    Write-Host "   watch      - 实时监控面板"
-    Write-Host "   ui         - 打开控制面板"
-    Write-Host "----------------------------------------"
+    Write-Host " core 子命令:" -ForegroundColor Magenta
+
+    Write-Host "   [name]    " -NoNewline
+    Write-Host "—— 切换目标内核" -ForegroundColor DarkGray
+
+    Write-Host "   start     " -NoNewline
+    Write-Host "—— 启动当前内核" -ForegroundColor DarkGray
+
+    Write-Host "   stop      " -NoNewline
+    Write-Host "—— 停止当前内核" -ForegroundColor DarkGray
+
+    Write-Host "   restart   " -NoNewline
+    Write-Host "—— 重启当前内核" -ForegroundColor DarkGray
+
+    Write-Host "   status    " -NoNewline
+    Write-Host "—— 查看当前状态" -ForegroundColor DarkGray
+
+    Write-Host "   watch     " -NoNewline
+    Write-Host "—— 实时监控面板" -ForegroundColor DarkGray
+
+    Write-Host "   ui        " -NoNewline
+    Write-Host "—— 打开控制面板" -ForegroundColor DarkGray
+
+    Write-Host "----------------------------------------" -ForegroundColor DarkGray
     Write-Host ""
 }
 
